@@ -1,0 +1,7 @@
+# Prettier also respects .gitignore; these are the extra generated/vendored
+# paths that .gitignore doesn't already cover.
+package-lock.json
+public
+coverage
+playwright-report
+test-results

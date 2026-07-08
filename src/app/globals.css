@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+/*
+  Design tokens — the single source of truth for raw values (DESIGN-SPEC §2–4).
+  Consumed two ways:
+    1. Tailwind utilities generated from these namespaces (bg-brand, text-danger,
+       rounded-card, text-section, …).
+    2. JS/inline-style access via `lib/tokens.ts`, which references these same
+       CSS custom properties as `var(--…)` — so there is never a second copy.
+  Plain `@theme` (not `@theme inline`) is deliberate: it emits the custom
+  properties onto :root so `tokens.ts`'s `var(--color-*)` strings resolve.
+*/
+@theme {
+  /* ---- Color (DESIGN-SPEC §2) ---- */
+  --color-brand: #4e2fd2; /* primary purple — prices, checkout, badges, selected border */
+  --color-ink: #0b0d10; /* headings, stepper numbers */
+  --color-ink-soft: #1f1f1f; /* variant labels, guarantee copy (descriptions at 75%) */
+  --color-muted: #6f7882; /* muted price, "/mo", compare labels */
+  --color-ink-price: #575757; /* active price in card */
+  --color-label: #484848; /* small labels ("Review", "Save my system…") */
+  --color-subhead: #a8b2bd; /* category subheads (CAMERAS, SENSORS…) */
+  --color-danger: #d8392b; /* strike-through / compare-at price */
+  --color-success: #0aa288; /* savings text ("Congrats!") */
+  --color-link: #0046c7; /* "Learn More" link */
+  --color-panel: #edf4ff; /* panel / step background tint */
+  --color-panel-alt: #f0f4f7; /* alternate tint */
+  --color-card: #ffffff; /* card background */
+  --color-line: #ced6de; /* default borders / dividers */
+  --color-line-soft: #e6ebf0; /* soft dividers */
+  --color-chip: #f1f1f2; /* variant chip / stepper control background */
+
+  /* ---- Radii (DESIGN-SPEC §4) ---- */
+  --radius-card: 10px; /* cards & panels */
+  --radius-control: 5px; /* buttons & chips */
+  --radius-xs: 4px; /* small elements / stepper controls */
+
+  /* ---- Font family (see font-substitution.md) ---- */
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+
+  /* ---- Type scale (DESIGN-SPEC §3) ----
+     Each role carries size + line-height + letter-spacing + weight, so one
+     utility (e.g. `text-section`) fully sets a role. Values are px-exact. */
+  --text-page-title: 32px; /* mobile "Let's get started!" */
+  --text-page-title--line-height: 35px;
+  --text-page-title--letter-spacing: -0.06px;
+  --text-page-title--font-weight: 700;
+
+  --text-section: 22px; /* "Choose your cameras", "Your security system" */
+  --text-section--line-height: 26px;
+  --text-section--letter-spacing: 0px;
+  --text-section--font-weight: 600;
+
+  --text-total: 28px; /* grand total "$187.89" */
+  --text-total--line-height: 32px;
+  --text-total--letter-spacing: -0.03px;
+  --text-total--font-weight: 700;
+
+  --text-plan: 20px; /* plan name "Cam Unlimited" */
+  --text-plan--line-height: 20px;
+  --text-plan--letter-spacing: -0.04px;
+  --text-plan--font-weight: 700;
+
+  --text-next: 18px; /* "Next: …" advance button */
+  --text-next--line-height: 24px;
+  --text-next--font-weight: 600;
+
+  --text-product: 16px; /* product title */
+  --text-product--line-height: 18px;
+  --text-product--letter-spacing: 0.6px;
+  --text-product--font-weight: 600;
+
+  --text-checkout: 17px; /* checkout button */
+  --text-checkout--line-height: 22px;
+  --text-checkout--font-weight: 700;
+
+  --text-price: 16px; /* active / compare-at price */
+  --text-price--line-height: 16px;
+  --text-price--letter-spacing: 0.08px;
+  --text-price--font-weight: 600;
+
+  --text-body: 14px; /* body / description */
+  --text-body--line-height: 18px;
+  --text-body--letter-spacing: 0.6px;
+  --text-body--font-weight: 500;
+
+  --text-stepper: 16px; /* stepper number */
+  --text-stepper--line-height: 20px;
+  --text-stepper--font-weight: 500;
+
+  --text-badge: 12px; /* discount badge "Save 22%" */
+  --text-badge--line-height: 15px;
+  --text-badge--font-weight: 600;
+
+  --text-eyebrow: 11px; /* "STEP 1 OF 4", "REVIEW" */
+  --text-eyebrow--line-height: 14px;
+  --text-eyebrow--letter-spacing: 1.6px;
+  --text-eyebrow--font-weight: 500;
+
+  --text-category: 12px; /* review category subhead "CAMERAS" */
+  --text-category--line-height: 16px;
+  --text-category--letter-spacing: 0.36px;
+  --text-category--font-weight: 400;
+
+  --text-variant: 10px; /* variant chip label "White" */
+  --text-variant--line-height: 10px;
+  --text-variant--letter-spacing: 0.6px;
+  --text-variant--font-weight: 500;
+
+  --text-selected: 14px; /* "N selected" */
+  --text-selected--line-height: 18px;
+  --text-selected--font-weight: 500;
+
+  --text-savings: 13px; /* "Congrats! …" savings callout */
+  --text-savings--line-height: 18px;
+  --text-savings--letter-spacing: -0.06px;
+  --text-savings--font-weight: 600;
+
+  --text-save-later: 13px; /* "Save my system for later" */
+  --text-save-later--line-height: 18px;
+  --text-save-later--letter-spacing: -0.02px;
+  --text-save-later--font-weight: 400;
+}
+
+/* Base layer — light only (no dark mode, per spec). */
+body {
+  background: var(--color-card);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
