@@ -34,6 +34,11 @@
   --radius-control: 5px; /* buttons & chips */
   --radius-xs: 4px; /* small elements / stepper controls */
 
+  /* ---- Motion ----
+     The only motion in the app: the accordion open/close (animations were
+     scoped out otherwise). Tokenised so the duration has one home. */
+  --duration-accordion: 200ms;
+
   /* ---- Font family (see font-substitution.md) ---- */
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
 
@@ -128,4 +133,44 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/*
+  Accordion open/close motion. Radix exposes the measured content height as
+  `--radix-accordion-content-height`, which we animate the block between 0 and.
+  Content always clips (`overflow: hidden`) so the reveal reads cleanly.
+  Wrapped in `prefers-reduced-motion` so it collapses to an instant, a11y-safe
+  snap for users who ask for reduced motion.
+*/
+[data-slot="accordion-content"] {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes accordion-down {
+    from {
+      height: 0;
+      opacity: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+      opacity: 1;
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+      opacity: 1;
+    }
+    to {
+      height: 0;
+      opacity: 0;
+    }
+  }
+  [data-slot="accordion-content"][data-state="open"] {
+    animation: accordion-down var(--duration-accordion) ease-out;
+  }
+  [data-slot="accordion-content"][data-state="closed"] {
+    animation: accordion-up var(--duration-accordion) ease-out;
+  }
 }
