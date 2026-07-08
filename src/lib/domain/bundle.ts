@@ -8,6 +8,7 @@
  * validation is hand-written to keep the domain layer dependency-free.
  */
 import rawBundle from "@/data/bundle.json";
+import { isFiniteNumber, isNonNegInt, isRecord } from "./guards";
 import type {
   BundleData,
   Category,
@@ -32,18 +33,6 @@ export class BundleValidationError extends Error {
     super(`Invalid bundle.json:\n - ${issues.join("\n - ")}`);
     this.name = "BundleValidationError";
   }
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isFiniteNumber(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value);
-}
-
-function isNonNegInt(value: unknown): value is number {
-  return isFiniteNumber(value) && Number.isInteger(value) && value >= 0;
 }
 
 /**

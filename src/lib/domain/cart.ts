@@ -5,7 +5,7 @@ import type {
   Product,
   Variant,
 } from "./types";
-import { lineKey, type Selection } from "./selection";
+import { lineKey, quantityOf, type Quantities } from "./selection";
 import { toCents } from "./money";
 
 /** A concrete review-panel line: one product, or one variant of it. */
@@ -24,26 +24,20 @@ export interface CartLine {
   hasStepper: boolean;
 }
 
-function qtyOf(
-  selection: Selection,
-  productId: string,
-  variantId?: string,
-): number {
-  return selection.quantities[lineKey(productId, variantId)] ?? 0;
-}
-
-/** Total quantity of a product across its variants (or its own qty). */
+/** Total quantity of a product across its variants (or its own qty). Lines and
+ *  counts depend only on quantities — never the active variant — so these take
+ *  the quantity map directly. */
 export function productQuantity(
   product: Product,
-  selection: Selection,
+  quantities: Quantities,
 ): number {
   if (product.variants && product.variants.length > 0) {
     return product.variants.reduce(
-      (sum, v) => sum + qtyOf(selection, product.id, v.id),
+      (sum, v) => sum + quantityOf(quantities, product.id, v.id),
       0,
     );
   }
-  return qtyOf(selection, product.id);
+  return quantityOf(quantities, product.id);
 }
 
 function imageFor(product: Product, variant?: Variant): string {
@@ -53,7 +47,7 @@ function imageFor(product: Product, variant?: Variant): string {
 /** Derive every review line with qty > 0, in catalog order. */
 export function buildCartLines(
   bundle: BundleData,
-  selection: Selection,
+  quantities: Quantities,
 ): CartLine[] {
   const lines: CartLine[] = [];
 
@@ -70,7 +64,7 @@ export function buildCartLines(
 
     if (p.variants && p.variants.length > 0) {
       for (const v of p.variants) {
-        const qty = qtyOf(selection, p.id, v.id);
+        const qty = quantityOf(quantities, p.id, v.id);
         if (qty <= 0) continue;
         lines.push({
           ...base,
@@ -83,7 +77,7 @@ export function buildCartLines(
         });
       }
     } else {
-      const qty = qtyOf(selection, p.id);
+      const qty = quantityOf(quantities, p.id);
       if (qty <= 0) continue;
       lines.push({
         ...base,
@@ -162,7 +156,7 @@ export function financingPerMonthCents(
 /** Distinct products with qty > 0, per category — the "N selected" counter. */
 export function countSelectedByCategory(
   bundle: BundleData,
-  selection: Selection,
+  quantities: Quantities,
 ): Record<CategoryId, number> {
   const counts: Record<CategoryId, number> = {
     cameras: 0,
@@ -171,7 +165,7 @@ export function countSelectedByCategory(
     accessories: 0,
   };
   for (const p of bundle.products) {
-    if (productQuantity(p, selection) > 0) counts[p.category] += 1;
+    if (productQuantity(p, quantities) > 0) counts[p.category] += 1;
   }
   return counts;
 }

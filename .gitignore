@@ -17,6 +17,7 @@
 # local dev aids — not part of the public deliverable
 /design-reference/
 /CLAUDE.md
+/DISCUSSIONS.md
 
 # misc
 .DS_Store

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getBundle } from "./bundle";
-import { lineKey, seedSelection } from "./selection";
+import { lineKey, normalizeSelection, seedSelection } from "./selection";
 
 const bundle = getBundle();
 
@@ -42,5 +42,40 @@ describe("seedSelection", () => {
   it("assigns no active variant to unvariated products", () => {
     expect(seed.activeVariant["sense-hub"]).toBeUndefined();
     expect(seed.activeVariant["cam-unlimited"]).toBeUndefined();
+  });
+});
+
+describe("normalizeSelection", () => {
+  it("backfills a valid active variant for variated products", () => {
+    const fixed = normalizeSelection(bundle, {
+      quantities: { "cam-v4::white": 1 },
+      activeVariant: {}, // missing
+    });
+    expect(fixed.activeVariant["cam-v4"]).toBe("white"); // seeded default
+    expect(fixed.activeVariant["battery-cam-pro"]).toBe("white"); // first
+  });
+
+  it("replaces an active variant that no longer exists", () => {
+    const fixed = normalizeSelection(bundle, {
+      quantities: {},
+      activeVariant: { "cam-v4": "chartreuse" },
+    });
+    expect(fixed.activeVariant["cam-v4"]).toBe("white");
+  });
+
+  it("re-clamps a tampered required item to its locked quantity", () => {
+    const fixed = normalizeSelection(bundle, {
+      quantities: { "sense-hub": 5 },
+      activeVariant: {},
+    });
+    expect(fixed.quantities["sense-hub"]).toBe(1);
+  });
+
+  it("restores a required item that was dropped from the payload", () => {
+    const fixed = normalizeSelection(bundle, {
+      quantities: {},
+      activeVariant: {},
+    });
+    expect(fixed.quantities["sense-hub"]).toBe(1);
   });
 });

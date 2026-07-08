@@ -8,10 +8,10 @@ import {
   groupCartLines,
   productQuantity,
 } from "./cart";
-import { lineKey, seedSelection, type Selection } from "./selection";
+import { lineKey, seedSelection, type Quantities } from "./selection";
 
 const bundle = getBundle();
-const seed = seedSelection(bundle);
+const seed = seedSelection(bundle).quantities;
 const productById = (id: string) => {
   const p = bundle.products.find((x) => x.id === id);
   if (!p) throw new Error(`missing product ${id}`);
@@ -47,12 +47,9 @@ describe("buildCartLines", () => {
 });
 
 describe("per-variant quantities are tracked separately", () => {
-  it("shows Red and Black of one product as two independent lines", () => {
-    const selection: Selection = {
-      quantities: { "cam-v4::white": 2, "cam-v4::black": 3 },
-      activeVariant: { "cam-v4": "black" }, // active variant is unrelated to counts
-    };
-    const camV4Lines = buildCartLines(bundle, selection).filter(
+  it("shows two variants of one product as two independent lines", () => {
+    const quantities: Quantities = { "cam-v4::white": 2, "cam-v4::black": 3 };
+    const camV4Lines = buildCartLines(bundle, quantities).filter(
       (l) => l.productId === "cam-v4",
     );
     expect(camV4Lines).toHaveLength(2);
@@ -61,11 +58,8 @@ describe("per-variant quantities are tracked separately", () => {
   });
 
   it("sums variant quantities for productQuantity", () => {
-    const selection: Selection = {
-      quantities: { "cam-v4::white": 2, "cam-v4::black": 3 },
-      activeVariant: {},
-    };
-    expect(productQuantity(productById("cam-v4"), selection)).toBe(5);
+    const quantities: Quantities = { "cam-v4::white": 2, "cam-v4::black": 3 };
+    expect(productQuantity(productById("cam-v4"), quantities)).toBe(5);
   });
 });
 
@@ -78,11 +72,8 @@ describe("computeTotals (card-canonical, honest math — DESIGN-SPEC §9)", () =
   });
 
   it("adds no savings for an undiscounted line", () => {
-    const selection: Selection = {
-      quantities: { [lineKey("microsd-card-256gb")]: 1 },
-      activeVariant: {},
-    };
-    const totals = computeTotals(buildCartLines(bundle, selection));
+    const quantities: Quantities = { [lineKey("microsd-card-256gb")]: 1 };
+    const totals = computeTotals(buildCartLines(bundle, quantities));
     expect(totals.savingsCents).toBe(0);
     expect(totals.activeCents).toBe(2098);
   });
@@ -99,11 +90,8 @@ describe("countSelectedByCategory", () => {
   });
 
   it("counts a product once no matter how many variants are selected", () => {
-    const selection: Selection = {
-      quantities: { "cam-v4::white": 1, "cam-v4::black": 4 },
-      activeVariant: {},
-    };
-    expect(countSelectedByCategory(bundle, selection).cameras).toBe(1);
+    const quantities: Quantities = { "cam-v4::white": 1, "cam-v4::black": 4 };
+    expect(countSelectedByCategory(bundle, quantities).cameras).toBe(1);
   });
 });
 
