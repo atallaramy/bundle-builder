@@ -23,22 +23,25 @@ export interface BundleState {
   openStep: number | null;
   savedAt: number | null;
 
-  setQuantity(
+  // Actions are function-typed properties (not method signatures) so consumers
+  // select them as plain functions — `s.increment` is a value, not an unbound
+  // method — which matches how a Zustand store is actually shaped.
+  setQuantity: (
     productId: string,
     variantId: string | undefined,
     qty: number,
-  ): void;
-  increment(productId: string, variantId?: string): void;
-  decrement(productId: string, variantId?: string): void;
-  setActiveVariant(productId: string, variantId: string): void;
-  setOpenStep(step: number | null): void;
+  ) => void;
+  increment: (productId: string, variantId?: string) => void;
+  decrement: (productId: string, variantId?: string) => void;
+  setActiveVariant: (productId: string, variantId: string) => void;
+  setOpenStep: (step: number | null) => void;
   /** Persist the current selection ("Save my system for later"). Returns
    *  whether the write succeeded, so the UI can distinguish a real save. */
-  save(): boolean;
+  save: () => boolean;
   /** Restore a previously saved selection, if any (called on mount). */
-  restore(): void;
+  restore: () => void;
   /** Return to the seeded configuration. */
-  reset(): void;
+  reset: () => void;
 }
 
 export interface BundleStoreDeps {

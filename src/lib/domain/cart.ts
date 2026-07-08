@@ -2,6 +2,7 @@ import type {
   BundleData,
   Category,
   CategoryId,
+  IconName,
   Product,
   Variant,
 } from "./types";
@@ -16,9 +17,11 @@ export interface CartLine {
   name: string;
   variantLabel?: string;
   image: string;
+  icon?: IconName; // shown in place of an image when the product has none (plan)
   category: CategoryId;
   unitActive: number; // dollars
   unitCompare?: number; // dollars
+  unit?: "mo"; // renders a "/mo" price suffix (the plan)
   qty: number;
   required: boolean;
   hasStepper: boolean;
@@ -56,8 +59,10 @@ export function buildCartLines(
     const base = {
       name: p.name,
       category: p.category,
+      icon: p.icon,
       unitActive: p.price.active,
       unitCompare: p.price.compareAt,
+      unit: p.price.unit,
       required: p.required === true,
       hasStepper,
     };

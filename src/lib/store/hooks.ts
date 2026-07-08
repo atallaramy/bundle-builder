@@ -8,8 +8,10 @@ import {
   countSelectedByCategory,
   financingPerMonthCents,
   groupCartLines,
+  productQuantity,
 } from "@/lib/domain/cart";
 import { quantityOf } from "@/lib/domain/selection";
+import type { Product } from "@/lib/domain/types";
 import { useBundleStore } from "./bundle-store";
 
 /**
@@ -58,4 +60,12 @@ export function useLineQuantity(productId: string, variantId?: string) {
 
 export function useActiveVariant(productId: string) {
   return useBundleStore((s) => s.selection.activeVariant[productId]);
+}
+
+/** Total quantity of a product across its variants — a primitive selector, so a
+ *  card re-renders (for its selected-border) only when its own total changes. */
+export function useProductQuantity(product: Product) {
+  return useBundleStore((s) =>
+    productQuantity(product, s.selection.quantities),
+  );
 }
