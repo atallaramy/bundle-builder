@@ -61,7 +61,14 @@ export interface Product {
 /** Static, data-driven copy for the review panel's non-line-item rows. */
 export interface PanelConfig {
   shipping: { label: string; compareAt: number }; // renders "~~$5.99~~ FREE"
-  guarantee: { image: string; text: string };
+  guarantee: {
+    image: string;
+    text: string; // seal alt text ("100% Wyze satisfaction guarantee")
+    // The returns blurb shown beside the larger seal in the desktop-alt review's
+    // right column only (absent on main + mobile) — DESIGN-SPEC / Figma alt frame.
+    returnsHeading: string;
+    returnsBody: string;
+  };
   financing: { months: number }; // "as low as $(total / months)/mo"
 }
 

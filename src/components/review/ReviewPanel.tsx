@@ -31,7 +31,9 @@ export function ReviewPanel({ variant = "main" }: { variant?: LayoutVariant }) {
         // Main: a single narrow column. Alt desktop: two columns — header +
         // line groups on the left, the totals/checkout summary on the right.
         isAlt
-          ? "flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-10"
+          ? // Alt desktop: two review columns — line groups (552) beside the
+            // totals/checkout summary (486), 52px gap (Figma alt frame 70:14135).
+            "flex flex-col lg:grid lg:grid-cols-[552px_486px] lg:gap-x-[52px]"
           : // Desktop-main: content is inset 20/29 past the 15px eyebrow gutter,
             // and the bottom-left corner is square (a Figma quirk — an inner
             // same-fill rect reaches the bottom-left but stops short on the right).
@@ -43,18 +45,37 @@ export function ReviewPanel({ variant = "main" }: { variant?: LayoutVariant }) {
           className={cn(
             "text-eyebrow text-label uppercase lg:text-[12px] lg:leading-[12px]",
             // Pull the eyebrow back to the 15px panel gutter (content sits at 20).
-            !isAlt && "lg:-ml-[5px]",
+            // Alt desktop has no eyebrow (its header starts at the H2) — hidden at
+            // lg; still shown on mobile, which both routes share.
+            isAlt ? "lg:hidden" : "lg:-ml-[5px]",
           )}
         >
           Review
         </p>
         {/* Deliberately distinct from the step section titles: 0.6px tracking +
             #1f1f1f (ink-soft), not the step title's ls0/#0b0d10. Line-height is
-            22 here (tight, = font size), not the shared token's 26. */}
-        <h2 className="mt-[25px] text-section leading-[22px] tracking-[0.6px] text-ink-soft">
+            22 here (tight, = font size), not the shared token's 26. Alt scales
+            the title to 28px (Figma alt review header). */}
+        <h2
+          className={cn(
+            "mt-[25px] text-section leading-[22px] tracking-[0.6px] text-ink-soft",
+            // Alt desktop drops the eyebrow, so the title sits at the column top
+            // (aligned with the right column's seal) rather than 25px below it.
+            isAlt && "lg:mt-0 lg:text-[28px] lg:leading-[28px]",
+          )}
+        >
           Your security system
         </h2>
-        <p className="mt-[5px] text-body text-ink-soft/75">
+        {/* Subtitle scales per layout (Figma): 12px mobile → 14px main → 16px
+            alt; Medium weight (500) in all. */}
+        <p
+          className={cn(
+            "mt-[5px] text-[12px] leading-[15.6px] font-medium tracking-[0.6px] text-ink-soft/75",
+            isAlt
+              ? "lg:text-[16px] lg:leading-[20.8px]"
+              : "lg:text-[14px] lg:leading-[18.2px]",
+          )}
+        >
           Review your personalized protection system designed to keep what
           matters most safe.
         </p>
@@ -69,7 +90,7 @@ export function ReviewPanel({ variant = "main" }: { variant?: LayoutVariant }) {
             </p>
             <div className="mt-2 flex flex-col gap-3">
               {group.lines.map((line) => (
-                <LineItem key={line.key} line={line} />
+                <LineItem key={line.key} line={line} variant={variant} />
               ))}
             </div>
           </section>
@@ -84,7 +105,14 @@ export function ReviewPanel({ variant = "main" }: { variant?: LayoutVariant }) {
               <div className="flex size-[41px] shrink-0 items-center justify-center rounded-control bg-card">
                 <Icon name="truck" className="size-[29px]" />
               </div>
-              <span className="flex-1 text-[14px] leading-4 font-medium tracking-[0.07px] text-ink">
+              <span
+                className={cn(
+                  "flex-1 leading-4 font-medium tracking-[0.07px] text-ink",
+                  // Same per-layout scale as the line names: 12 → 14 → 18.
+                  "text-[12px]",
+                  isAlt ? "lg:text-[18px]" : "lg:text-[14px]",
+                )}
+              >
                 {panel.shipping.label}
               </span>
             </div>
@@ -92,13 +120,14 @@ export function ReviewPanel({ variant = "main" }: { variant?: LayoutVariant }) {
               activeCents={0}
               compareCents={toCents(panel.shipping.compareAt)}
               tone="review"
+              variant={variant}
             />
           </div>
         </section>
       </div>
 
       <div className={cn("mt-3", isAlt && "lg:mt-0")}>
-        <Totals />
+        <Totals variant={variant} />
         <Checkout />
       </div>
     </aside>

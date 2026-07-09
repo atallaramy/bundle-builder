@@ -178,7 +178,9 @@
     "shipping": { "label": "Fast Shipping", "compareAt": 5.99 },
     "guarantee": {
       "image": "/products/satisfaction-badge.png",
-      "text": "100% Wyze satisfaction guarantee"
+      "text": "100% Wyze satisfaction guarantee",
+      "returnsHeading": "30-day hassle-free returns",
+      "returnsBody": "If you're not totally in love with the product, we will refund you 100%."
     },
     "financing": { "months": 12 }
   }

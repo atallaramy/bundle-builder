@@ -157,6 +157,14 @@ export function parseBundle(raw: unknown): BundleData {
       issues.push("`panel.shipping.compareAt` must be a number");
     if (!isRecord(panel.guarantee) || typeof panel.guarantee.text !== "string")
       issues.push("`panel.guarantee.text` must be a string");
+    if (
+      !isRecord(panel.guarantee) ||
+      typeof panel.guarantee.returnsHeading !== "string" ||
+      typeof panel.guarantee.returnsBody !== "string"
+    )
+      issues.push(
+        "`panel.guarantee.returnsHeading`/`returnsBody` must be strings",
+      );
     if (!isRecord(panel.financing) || !isNonNegInt(panel.financing.months))
       issues.push("`panel.financing.months` must be a positive integer");
   }

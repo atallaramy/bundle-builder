@@ -52,7 +52,9 @@ export function Checkout() {
       <button
         type="button"
         onClick={handleSave}
-        className="cursor-pointer text-center text-save-later text-label italic underline"
+        // Save-later scales per layout (Figma): 12px on mobile → 14px on desktop
+        // (both routes). The mobile base is shared, so the bump is `lg:`.
+        className="cursor-pointer text-center text-[12px] leading-[14.4px] font-normal tracking-[-0.02px] text-label italic underline lg:text-[14px] lg:leading-[16.8px]"
       >
         {saved ? "Saved for later ✓" : "Save my system for later"}
       </button>

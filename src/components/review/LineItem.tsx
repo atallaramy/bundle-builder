@@ -1,11 +1,18 @@
 "use client";
 
 import Image from "next/image";
+import { cn } from "@/lib/cn";
+import type { LayoutVariant } from "@/lib/layout";
 import { toCents } from "@/lib/domain/money";
 import type { CartLine } from "@/lib/domain/cart";
 import { Icon } from "@/components/ui/icons";
 import { Price } from "@/components/ui/price";
 import { QtyStepper } from "@/components/builder/QtyStepper";
+
+// Review line name scales per layout (Figma): 12px mobile → 14px main → 18px alt.
+// The mobile base is shared by both routes; `variant` drives the desktop size.
+const nameSize = (variant: LayoutVariant) =>
+  cn("text-[12px]", variant === "alt" ? "lg:text-[18px]" : "lg:text-[14px]");
 
 /**
  * One review-panel line. Prices shown are line totals (unit × qty). Two special
@@ -14,14 +21,22 @@ import { QtyStepper } from "@/components/builder/QtyStepper";
  * line (`unit === "mo"`, no stepper) shows the shield icon and a "/mo" price
  * with the "Cam Unlimited" brand lockup (DESIGN-SPEC §5).
  */
-export function LineItem({ line }: { line: CartLine }) {
+export function LineItem({
+  line,
+  variant = "main",
+}: {
+  line: CartLine;
+  variant?: LayoutVariant;
+}) {
   const activeCents = toCents(line.unitActive) * line.qty;
   const compareCents =
     line.unitCompare != null ? toCents(line.unitCompare) * line.qty : undefined;
 
   const isPlan = line.category === "plan";
-  // A two-line price (compare-at above active) top-aligns to the thumbnail; a
-  // single price is vertically centred in the row (Figma).
+  const isAlt = variant === "alt";
+  // A two-line (stacked) price top-aligns to the thumbnail; a single price is
+  // centred. Alt desktop lays the two prices out horizontally (one line), so it
+  // centres — but its mobile rendering is still stacked, hence the lg override.
   const hasCompare = compareCents != null && compareCents > activeCents;
 
   // The plan row is space-between with the lockup top-aligned to its two-line
@@ -36,10 +51,17 @@ export function LineItem({ line }: { line: CartLine }) {
           {line.icon && (
             // Plan lockup renders ~20x24 (viewBox 40:48), smaller than the 26px
             // step-header shield — a deliberate size split, not a shared slot.
-            <Icon name={line.icon} className="h-6 w-5 shrink-0" />
+            // It scales up with the 20px alt plan name (Figma alt: ~26x31).
+            <Icon
+              name={line.icon}
+              className={cn(
+                "h-6 w-5 shrink-0",
+                isAlt && "lg:h-[31px] lg:w-[26px]",
+              )}
+            />
           )}
           <div className="min-w-0 flex-1">
-            <PlanName name={line.name} />
+            <PlanName name={line.name} variant={variant} />
           </div>
         </div>
         <Price
@@ -47,6 +69,7 @@ export function LineItem({ line }: { line: CartLine }) {
           compareCents={compareCents}
           unit={line.unit}
           tone="review"
+          variant={variant}
         />
       </div>
     );
@@ -71,7 +94,12 @@ export function LineItem({ line }: { line: CartLine }) {
             />
           )}
         </div>
-        <p className="min-w-0 flex-1 text-[14px] leading-4 font-medium tracking-[0.07px] text-ink">
+        <p
+          className={cn(
+            "min-w-0 flex-1 leading-4 font-medium tracking-[0.07px] text-ink",
+            nameSize(variant),
+          )}
+        >
           {line.name}
           {line.required && " (Required)"}
         </p>
@@ -90,20 +118,31 @@ export function LineItem({ line }: { line: CartLine }) {
         compareCents={compareCents}
         unit={line.unit}
         tone="review"
-        className={hasCompare ? "self-start" : undefined}
+        variant={variant}
+        // Stacked two-line price top-aligns to the thumbnail; a single line
+        // centres. Alt desktop lays the pair out horizontally (one line) so it
+        // centres there, while its mobile rendering stays stacked/top-aligned.
+        className={
+          hasCompare ? cn("self-start", isAlt && "lg:self-center") : undefined
+        }
       />
     </div>
   );
 }
 
 /** "Cam Unlimited" — first word in ink, the rest in brand purple, matching the
- *  Figma's plan lockup. */
-function PlanName({ name }: { name: string }) {
+ *  Figma's plan lockup. Bold two-tone; sizes 14 (mobile) → 16 (main) → 20 (alt). */
+function PlanName({ name, variant }: { name: string; variant: LayoutVariant }) {
   const [first, ...rest] = name.split(" ");
   return (
-    // Bold two-tone lockup: first word pure black, rest brand purple. 14px on
-    // mobile / 16px desktop (Figma; the 20px was the out-of-scope alt layout).
-    <p className="text-[14px] leading-4 font-bold tracking-[-0.028px] lg:text-[16px] lg:tracking-[-0.032px]">
+    <p
+      className={cn(
+        "text-[14px] leading-[14px] font-bold tracking-[-0.028px]",
+        variant === "alt"
+          ? "lg:text-[20px] lg:leading-5 lg:tracking-[-0.04px]"
+          : "lg:text-[16px] lg:leading-4 lg:tracking-[-0.032px]",
+      )}
+    >
       <span className="text-black">{first}</span>
       {rest.length > 0 && <span className="text-brand"> {rest.join(" ")}</span>}
     </p>
