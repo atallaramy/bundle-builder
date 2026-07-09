@@ -1,26 +1,23 @@
 import type { SVGProps } from "react";
 import type { IconName } from "@/lib/domain/types";
+import { HEADER_GLYPHS } from "./icon-glyphs";
 
 /**
  * Inline SVG icon set. Icons are UI, not data — the catalog only names them
- * (`IconName`); the geometry lives here. Each glyph traces the Figma source
- * file (its own viewBox + intrinsic brand fills). The header glyphs are drawn
- * in a 2× viewBox (52 for a 26px icon), so every stroke must be the Figma
- * weight × 2 — in the source frames every stroke is uniform (camera/grid 1.5,
- * sensor 1.55, shield 1.0), which here becomes 3 / 3.15 / 2 across *all* parts
- * of each glyph. (The raw exports thickened only the "obvious" strokes and left
- * the rest at 1×, so lenses/boxes/cells rendered at half weight — fixed here.)
- * Stepper `plus`/`minus` use `currentColor` so the button drives their colour
- * (ink, dimmed when disabled); every other glyph carries its designed fill.
+ * (`IconName`); the geometry lives here.
+ *
+ * The four leading/header glyphs (camera, shield, sensor, grid) are Figma's own
+ * fill/stroke geometry, generated into `icon-glyphs.tsx` by
+ * `scripts/generate-icons.mjs` so they're pixel-accurate to the design and never
+ * hand-tuned. The remaining glyphs (chevron, truck, plan-logo, ±) are small,
+ * fill-based, and inlined below. Stepper `plus`/`minus` use `currentColor` so the
+ * button drives their colour (ink, dimmed when disabled); every other glyph
+ * carries its designed fill.
  */
 
 type IconGlyph = IconName | "chevron" | "truck" | "plus" | "minus";
 
-const VIEWBOX: Record<IconGlyph, string> = {
-  camera: "0 0 52 52",
-  shield: "0 0 52 54",
-  sensor: "0 0 56 56",
-  grid: "0 0 52 52",
+const VIEWBOX: Partial<Record<IconGlyph, string>> = {
   chevron: "0 0 24 24",
   truck: "0 0 58 58",
   "plan-logo": "0 0 40 48",
@@ -30,202 +27,6 @@ const VIEWBOX: Record<IconGlyph, string> = {
 
 function glyph(name: IconGlyph) {
   switch (name) {
-    case "camera":
-      return (
-        <>
-          <g>
-            <path
-              d="M17.333 49.8333V41.1666"
-              stroke="#6F7882"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M34.667 49.8333V41.1666"
-              stroke="#6F7882"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M45.5 49.8334L6.5 49.8334"
-              stroke="#6F7882"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M26 10.2916C30.4872 10.2916 34.125 13.9295 34.125 18.4166C34.125 22.9038 30.4872 26.5416 26 26.5416C21.5128 26.5416 17.875 22.9038 17.875 18.4166C17.875 13.9295 21.5128 10.2916 26 10.2916Z"
-              stroke="#6F7882"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M25.9463 32.5C25.4978 32.5 25.1338 32.864 25.1338 33.3125C25.1338 33.761 25.4978 34.125 25.9463 34.125C26.3948 34.125 26.7588 33.761 26.7588 33.3125C26.7588 32.864 26.3948 32.5 25.9463 32.5Z"
-              fill="#6F7882"
-              stroke="#6F7882"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <rect
-              x="6.375"
-              y="1.5"
-              width="39.25"
-              height="39.25"
-              rx="2.5"
-              stroke="#6F7882"
-              strokeWidth="3"
-            />
-          </g>
-        </>
-      );
-    case "shield":
-      return (
-        <>
-          <path
-            d="M8.44372 10.5091C8.44372 10.5091 5.7207 10.9981 5.7207 13.2975V30.0279C5.7207 38.9749 18.8529 48.9314 23.3169 51.8889C24.2063 52.4838 25.3573 52.4838 26.2468 51.8889C30.7107 48.9314 43.843 38.9749 43.843 30.0279V13.2975C43.843 10.9981 41.12 10.5091 41.12 10.5091L26.3621 5.85917C25.3329 5.5349 24.2308 5.5349 23.2017 5.85917L8.44372 10.5091Z"
-            fill="#F0F0F0"
-          />
-          <path
-            d="M11.7428 8.52228C11.7882 8.51385 11.833 8.50268 11.877 8.4888L26.635 3.83887C27.4419 3.58463 28.306 3.58463 29.1129 3.83887L43.8708 8.4888C43.9149 8.50268 43.9597 8.51385 44.0051 8.52228C44.0069 8.52262 44.0087 8.52295 44.0105 8.52329L44.0097 8.52315L44.0083 8.52288L44.0061 8.52249L44.0118 8.52365C44.0211 8.52557 44.039 8.52943 44.0642 8.53549C44.1151 8.54767 44.1938 8.56835 44.2911 8.5995C44.4897 8.66311 44.7432 8.7635 44.9867 8.90998C45.4722 9.20224 45.7859 9.57991 45.7859 10.1655V26.8959C45.7859 28.8502 45.0652 30.943 43.8232 33.0794C42.5852 35.2091 40.8712 37.31 38.9895 39.2582C35.2251 43.1561 30.8983 46.3326 28.7099 47.7826L28.7059 47.7853C28.2003 48.1234 27.5475 48.1234 27.042 47.7853L27.0379 47.7826C24.8494 46.3326 20.5226 43.1561 16.7582 39.2582C14.8767 37.31 13.1626 35.2091 11.9246 33.0794C10.6826 30.943 9.96191 28.8502 9.96191 26.8959V10.1655C9.96191 9.57991 10.2755 9.20224 10.7611 8.90998C11.0046 8.7635 11.2581 8.66311 11.4567 8.5995C11.554 8.56835 11.6328 8.54767 11.6836 8.53549C11.7088 8.52943 11.7267 8.52557 11.736 8.52365L11.7428 8.52228ZM11.738 8.52315L11.7379 8.52316C11.738 8.52315 11.7381 8.52315 11.7381 8.52313L11.738 8.52315Z"
-            stroke="#6F7882"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </>
-      );
-    case "sensor":
-      return (
-        <>
-          <path
-            d="M39.7436 14.4939C39.7436 15.9032 38.804 16.8427 37.3947 16.8427H18.6041C17.1947 16.8427 16.2552 15.9032 16.2552 14.4939V3.92418C16.2552 2.51488 17.1947 1.57535 18.6041 1.57535H37.3947C38.804 1.57535 39.7436 2.51488 39.7436 3.92418V14.4939Z"
-            stroke="#6F7882"
-            strokeWidth="3.1506"
-            strokeMiterlimit="10"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M24.0057 8.62187V9.79629"
-            stroke="#6F7882"
-            strokeWidth="3.1506"
-            strokeMiterlimit="10"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M32.2276 8.62187V9.79629"
-            stroke="#6F7882"
-            strokeWidth="3.1506"
-            strokeMiterlimit="10"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M38.9506 27.5303C32.9992 33.4024 23.0007 33.4024 17.0492 27.5303"
-            stroke="#6F7882"
-            strokeWidth="3.1506"
-            strokeMiterlimit="10"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M46.5688 35.0468C36.3323 45.1467 19.6682 45.1467 9.43176 35.0468"
-            stroke="#6F7882"
-            strokeWidth="3.1506"
-            strokeMiterlimit="10"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M54.4239 43.9718C39.6643 58.0647 16.3347 57.8299 1.5751 43.7369"
-            stroke="#6F7882"
-            strokeWidth="3.1506"
-            strokeMiterlimit="10"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </>
-      );
-    case "grid":
-      return (
-        <>
-          <path
-            d="M32.956 12.9565L25.9995 6L19.043 12.9565"
-            stroke="#6F7882"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M16.1441 20.3479C16.1441 21.1551 15.8234 21.9292 15.2527 22.5C14.6819 23.0707 13.9078 23.3914 13.1006 23.3914H11.0728C10.2656 23.3914 9.49147 23.0707 8.92071 22.5C8.34995 21.9292 8.0293 21.1551 8.0293 20.3479C8.0293 19.5407 8.34995 18.7666 8.92071 18.1959C9.49147 17.6251 10.2656 17.3044 11.0728 17.3044H13.1006C13.9078 17.3044 14.6819 17.6251 15.2527 18.1959C15.8234 18.7666 16.1441 19.5407 16.1441 20.3479Z"
-            stroke="#6F7882"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M30.0572 20.3479C30.0572 21.1551 29.7365 21.9292 29.1658 22.5C28.595 23.0707 27.8209 23.3914 27.0137 23.3914H24.9859C24.1787 23.3914 23.4046 23.0707 22.8338 22.5C22.263 21.9292 21.9424 21.1551 21.9424 20.3479C21.9424 19.5407 22.263 18.7666 22.8338 18.1959C23.4046 17.6251 24.1787 17.3044 24.9859 17.3044H27.0137C27.8209 17.3044 28.595 17.6251 29.1658 18.1959C29.7365 18.7666 30.0572 19.5407 30.0572 20.3479Z"
-            stroke="#6F7882"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M43.9703 20.3479C43.9703 21.1551 43.6496 21.9292 43.0788 22.5C42.5081 23.0707 41.734 23.3914 40.9268 23.3914H38.8989C38.0918 23.3914 37.3176 23.0707 36.7469 22.5C36.1761 21.9292 35.8555 21.1551 35.8555 20.3479C35.8555 19.5407 36.1761 18.7666 36.7469 18.1959C37.3176 17.6251 38.0918 17.3044 38.8989 17.3044H40.9268C41.734 17.3044 42.5081 17.6251 43.0788 18.1959C43.6496 18.7666 43.9703 19.5407 43.9703 20.3479Z"
-            stroke="#6F7882"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M16.1441 31.6521C16.1441 32.4593 15.8234 33.2334 15.2527 33.8042C14.6819 34.3749 13.9078 34.6956 13.1006 34.6956H11.0728C10.2656 34.6956 9.49147 34.3749 8.92071 33.8042C8.34995 33.2334 8.0293 32.4593 8.0293 31.6521C8.0293 30.8449 8.34995 30.0708 8.92071 29.5001C9.49147 28.9293 10.2656 28.6086 11.0728 28.6086H13.1006C13.9078 28.6086 14.6819 28.9293 15.2527 29.5001C15.8234 30.0708 16.1441 30.8449 16.1441 31.6521Z"
-            stroke="#6F7882"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M30.0572 31.6521C30.0572 32.4593 29.7365 33.2334 29.1658 33.8042C28.595 34.3749 27.8209 34.6956 27.0137 34.6956H24.9859C24.1787 34.6956 23.4046 34.3749 22.8338 33.8042C22.263 33.2334 21.9424 32.4593 21.9424 31.6521C21.9424 30.8449 22.263 30.0708 22.8338 29.5001C23.4046 28.9293 24.1787 28.6086 24.9859 28.6086H27.0137C27.8209 28.6086 28.595 28.9293 29.1658 29.5001C29.7365 30.0708 30.0572 30.8449 30.0572 31.6521Z"
-            stroke="#6F7882"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M43.9703 31.6521C43.9703 32.4593 43.6496 33.2334 43.0788 33.8042C42.5081 34.3749 41.734 34.6956 40.9268 34.6956H38.8989C38.0918 34.6956 37.3176 34.3749 36.7469 33.8042C36.1761 33.2334 35.8555 32.4593 35.8555 31.6521C35.8555 30.8449 36.1761 30.0708 36.7469 29.5001C37.3176 28.9293 38.0918 28.6086 38.8989 28.6086H40.9268C41.734 28.6086 42.5081 28.9293 43.0788 29.5001C43.6496 30.0708 43.9703 30.8449 43.9703 31.6521Z"
-            stroke="#6F7882"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M16.1441 42.9566C16.1441 43.7637 15.8234 44.5379 15.2527 45.1086C14.6819 45.6794 13.9078 46 13.1006 46H11.0728C10.2656 46 9.49147 45.6794 8.92071 45.1086C8.34995 44.5379 8.0293 43.7637 8.0293 42.9566C8.0293 42.1494 8.34995 41.3753 8.92071 40.8045C9.49147 40.2337 10.2656 39.9131 11.0728 39.9131H13.1006C13.9078 39.9131 14.6819 40.2337 15.2527 40.8045C15.8234 41.3753 16.1441 42.1494 16.1441 42.9566Z"
-            stroke="#6F7882"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M30.0572 42.9566C30.0572 43.7637 29.7365 44.5379 29.1658 45.1086C28.595 45.6794 27.8209 46 27.0137 46H24.9859C24.1787 46 23.4046 45.6794 22.8338 45.1086C22.263 44.5379 21.9424 43.7637 21.9424 42.9566C21.9424 42.1494 22.263 41.3753 22.8338 40.8045C23.4046 40.2337 24.1787 39.9131 24.9859 39.9131H27.0137C27.8209 39.9131 28.595 40.2337 29.1658 40.8045C29.7365 41.3753 30.0572 42.1494 30.0572 42.9566Z"
-            stroke="#6F7882"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M43.9703 42.9566C43.9703 43.7637 43.6496 44.5379 43.0788 45.1086C42.5081 45.6794 41.734 46 40.9268 46H38.8989C38.0918 46 37.3176 45.6794 36.7469 45.1086C36.1761 44.5379 35.8555 43.7637 35.8555 42.9566C35.8555 42.1494 36.1761 41.3753 36.7469 40.8045C37.3176 40.2337 38.0918 39.9131 38.8989 39.9131H40.9268C41.734 39.9131 42.5081 40.2337 43.0788 40.8045C43.6496 41.3753 43.9703 42.1494 43.9703 42.9566Z"
-            stroke="#6F7882"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </>
-      );
     case "chevron":
       return (
         <>
@@ -317,12 +118,19 @@ export function Icon({
   name,
   ...props
 }: { name: IconGlyph } & Omit<SVGProps<SVGSVGElement>, "name">) {
+  // Header glyphs come from the generated Figma geometry; the rest are inlined.
+  const header = HEADER_GLYPHS[name];
   return (
     // fill="none" is the default the Figma exports assume: stroke-only shapes
     // must not paint a fill (otherwise they default to solid black). Glyphs that
     // want a fill set it explicitly on their own paths.
-    <svg viewBox={VIEWBOX[name]} fill="none" aria-hidden="true" {...props}>
-      {glyph(name)}
+    <svg
+      viewBox={header?.viewBox ?? VIEWBOX[name]}
+      fill="none"
+      aria-hidden="true"
+      {...props}
+    >
+      {header ? header.glyph : glyph(name)}
     </svg>
   );
 }
