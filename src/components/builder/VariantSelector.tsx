@@ -5,7 +5,7 @@ import Image from "next/image";
 import { cn } from "@/lib/cn";
 import type { Product } from "@/lib/domain/types";
 import { useBundleStore } from "@/lib/store/bundle-store";
-import { useActiveVariant } from "@/lib/store/hooks";
+import { useActiveVariant, useProductQuantity } from "@/lib/store/hooks";
 
 /**
  * Row of colour chips for a variated product (DESIGN-SPEC §6). Built on Radix
@@ -13,14 +13,17 @@ import { useActiveVariant } from "@/lib/store/hooks";
  * focus, arrow-key selection) instead of hand-rolled ARIA — single-select "pick
  * a colour" is exactly a radio group. Selecting a chip makes it the *active*
  * variant (which the card's stepper binds to) but touches no quantity, so each
- * variant keeps its own count. The active chip gets a subtle purple border (the
- * brief marks chip highlighting optional; the design shows it and it aids
- * orientation).
+ * variant keeps its own count. Once the product is in the cart (qty > 0) the
+ * active chip gets the green selected treatment (border + fill) from the
+ * design; a qty-0 product shows every chip unselected, matching the mock.
  */
 export function VariantSelector({ product }: { product: Product }) {
   const variants = product.variants ?? [];
   const active = useActiveVariant(product.id) ?? variants[0]?.id;
   const setActiveVariant = useBundleStore((s) => s.setActiveVariant);
+  // Green "selected" chip only once the product is in the cart; a qty-0 product
+  // shows every chip unselected (matches the reference).
+  const selected = useProductQuantity(product) > 0;
 
   if (variants.length === 0) return null;
 
@@ -37,9 +40,11 @@ export function VariantSelector({ product }: { product: Product }) {
           key={variant.id}
           value={variant.id}
           className={cn(
-            "flex cursor-pointer items-center gap-1.5 rounded-control border bg-card py-1 pr-2.5 pl-1 transition-colors",
+            "flex cursor-pointer items-center gap-1.5 rounded-chip border bg-card py-1 pr-2.5 pl-1 transition-colors",
             "focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none",
-            "border-line hover:border-muted data-[state=checked]:border-brand",
+            "border-chip-border hover:border-muted",
+            selected &&
+              "data-[state=checked]:border-success data-[state=checked]:bg-chip-selected-bg",
           )}
         >
           <Image

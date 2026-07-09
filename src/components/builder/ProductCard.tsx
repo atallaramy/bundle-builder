@@ -38,33 +38,40 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article
       className={cn(
-        "relative flex flex-col gap-3 rounded-card bg-card p-[11px]",
-        // Transparent border when unselected keeps geometry stable on selection.
-        selected ? "border-2 border-brand" : "border-2 border-transparent",
+        // Horizontal layout (Figma): image column | content column, 19px gap.
+        // Columns stretch to equal height so the image centres against the
+        // content and clears the absolute badge.
+        "relative flex items-center rounded-card bg-card p-[11px]",
+        // Transparent border when unselected keeps geometry stable on selection;
+        // the selected purple is 70% opacity per the design (a softer purple).
+        // Image→content gap is state-dependent in Figma: 19px selected, 13px not.
+        selected
+          ? "gap-[19px] border-2 border-brand/70"
+          : "gap-[13px] border-2 border-transparent",
       )}
     >
       {product.discountBadge && (
-        <span className="absolute top-2.5 left-2.5 z-10 rounded-control bg-brand px-2 py-1 text-badge text-white">
+        <span className="absolute top-[11px] left-[11px] z-10 rounded-full bg-brand px-1.5 py-0.5 text-badge text-white">
           {product.discountBadge}
         </span>
       )}
 
-      <div className="flex gap-3">
-        <div className="flex size-24 shrink-0 items-center justify-center">
-          {heroSrc ? (
-            <Image
-              src={heroSrc}
-              alt={product.name}
-              width={96}
-              height={96}
-              className="size-full object-contain"
-            />
-          ) : product.icon ? (
-            <Icon name={product.icon} className="size-12 text-brand" />
-          ) : null}
-        </div>
+      <div className="flex w-24 shrink-0 items-center justify-center">
+        {heroSrc ? (
+          <Image
+            src={heroSrc}
+            alt={product.name}
+            width={96}
+            height={96}
+            className="size-full object-contain"
+          />
+        ) : product.icon ? (
+          <Icon name={product.icon} className="size-12" />
+        ) : null}
+      </div>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+      <div className="flex min-w-0 flex-1 flex-col gap-2.5">
+        <div className="flex flex-col gap-2">
           <h4 className="text-product text-ink">{product.name}</h4>
           {product.description && (
             <p className="text-body text-ink-soft/75">
@@ -77,34 +84,40 @@ export function ProductCard({ product }: { product: Product }) {
               )}
             </p>
           )}
-          {hasVariants && <VariantSelector product={product} />}
         </div>
-      </div>
+        {hasVariants && <VariantSelector product={product} />}
 
-      <div className="mt-auto flex items-center justify-between gap-3">
-        {hasStepper ? (
-          // `stepperVariantId` is undefined for unvariated products, which the
-          // stepper treats as the product's own line. Required products (Sense
-          // Hub) keep the stepper locked here too, matching the review line.
-          <QtyStepper
-            productId={product.id}
-            variantId={stepperVariantId}
-            disabled={product.required === true}
-            label={product.name}
+        {/* Stepper + price sit inside the content column (indented past the
+            image). The content column keeps its natural height and is centred
+            vertically in the card (Figma counterAxisAlignItems: CENTER), so on
+            a short card stretched to its row's height the block sits centred
+            rather than pinned to the top or bottom. */}
+        <div className="flex items-end justify-between gap-2.5">
+          {hasStepper ? (
+            // `stepperVariantId` is undefined for unvariated products, which the
+            // stepper treats as the product's own line. Required products (Sense
+            // Hub) keep the stepper locked here too, matching the review line.
+            <QtyStepper
+              productId={product.id}
+              variantId={stepperVariantId}
+              disabled={product.required === true}
+              label={product.name}
+              tone="card"
+            />
+          ) : (
+            <span aria-hidden />
+          )}
+          <Price
+            activeCents={toCents(product.price.active)}
+            compareCents={
+              product.price.compareAt != null
+                ? toCents(product.price.compareAt)
+                : undefined
+            }
+            unit={product.price.unit}
+            tone="card"
           />
-        ) : (
-          <span aria-hidden />
-        )}
-        <Price
-          activeCents={toCents(product.price.active)}
-          compareCents={
-            product.price.compareAt != null
-              ? toCents(product.price.compareAt)
-              : undefined
-          }
-          unit={product.price.unit}
-          tone="card"
-        />
+        </div>
       </div>
     </article>
   );

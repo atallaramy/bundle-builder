@@ -61,22 +61,26 @@ function Step({
     <AccordionItem
       value={String(category.step)}
       className={cn(
-        "border-line",
-        // Collapsed steps: hairline-divided list rows (with a trailing rule).
-        "data-[state=closed]:border-t last:data-[state=closed]:border-b",
-        // Open step: tinted rounded panel with 13px breathing room around it.
-        "data-[state=open]:my-[13px] data-[state=open]:rounded-card data-[state=open]:border data-[state=open]:border-line-soft data-[state=open]:bg-panel",
+        // Open step: tinted rounded panel with 13px breathing room around it
+        // (fill + radius only — the reference panel carries no stroke). The
+        // step-separator hairlines live on the title row below, not here.
+        "data-[state=open]:my-[13px] data-[state=open]:rounded-card data-[state=open]:bg-panel",
         "first:mt-0",
       )}
     >
       <AccordionHeader>
         <AccordionTrigger className="group flex w-full cursor-pointer flex-col gap-2 px-[15px] py-[15px] text-left">
-          <span className="text-eyebrow text-muted uppercase">
+          <span className="text-eyebrow text-label uppercase lg:group-data-[state=open]:text-[12px] lg:group-data-[state=open]:leading-[12px]">
             Step {category.step} of {TOTAL_STEPS}
           </span>
-          <span className="flex w-full items-center gap-2.5">
-            <Icon name={category.icon} className="size-6 shrink-0 text-ink" />
-            <span className="text-section text-ink">{category.stepTitle}</span>
+          {/* Title row. A full-bleed hairline sits under the eyebrow on every
+              step (Figma "Frame 25" top stroke); collapsed steps add a second
+              hairline under the title (its bottom stroke). */}
+          <span className="-mx-[15px] flex w-full items-center gap-2.5 border-t-[0.5px] border-[#1f1f1f] px-[15px] pt-3.5 group-data-[state=closed]:border-b-[0.5px] group-data-[state=closed]:pb-3.5">
+            <Icon name={category.icon} className="size-6 shrink-0" />
+            <span className="text-[18px] leading-[18px] font-semibold text-ink lg:text-[22px] lg:leading-[22px]">
+              {category.stepTitle}
+            </span>
             <span className="ml-auto flex items-center gap-1.5 text-selected text-brand">
               {/* Count: always shown when open; on collapsed steps it stays in
                   the single-column layout but hides once the two-column desktop
@@ -85,9 +89,11 @@ function Step({
               <span className="inline lg:group-data-[state=closed]:hidden">
                 {count} selected
               </span>
+              {/* carrot-up points up (open); rotate 180° when the step is
+                  closed so it points down. */}
               <Icon
                 name="chevron"
-                className="size-4 transition-transform group-data-[state=open]:rotate-180 motion-reduce:transition-none"
+                className="size-3 transition-transform group-data-[state=closed]:rotate-180 motion-reduce:transition-none"
               />
             </span>
           </span>
@@ -95,7 +101,7 @@ function Step({
       </AccordionHeader>
 
       <AccordionContent className="px-[15px] pb-[15px]">
-        <div className="grid grid-cols-1 gap-[13px] sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-[13px] sm:grid-cols-2 sm:[&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:w-[calc(50%-6.5px)] sm:[&>*:last-child:nth-child(odd)]:justify-self-center">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
@@ -105,7 +111,7 @@ function Step({
             <button
               type="button"
               onClick={() => onAdvance(nextStep.step)}
-              className="cursor-pointer rounded-control border border-brand px-6 py-2.5 text-next text-brand transition-colors hover:bg-brand hover:text-white"
+              className="cursor-pointer rounded-[7px] border border-brand px-6 py-2.5 text-next text-brand transition-colors hover:bg-brand hover:text-white"
             >
               Next: {nextStep.stepTitle}
             </button>
