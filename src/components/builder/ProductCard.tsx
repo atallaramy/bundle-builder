@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { cn } from "@/lib/cn";
+import type { LayoutVariant } from "@/lib/layout";
 import { toCents } from "@/lib/domain/money";
 import type { Product } from "@/lib/domain/types";
 import { useActiveVariant, useProductQuantity } from "@/lib/store/hooks";
@@ -17,7 +18,14 @@ import { VariantSelector } from "./VariantSelector";
  * selected border (DESIGN-SPEC §5). The stepper is bound to the active variant,
  * so per-variant counts stay separate (§6).
  */
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  variant = "main",
+}: {
+  product: Product;
+  variant?: LayoutVariant;
+}) {
+  const isAlt = variant === "alt";
   const totalQty = useProductQuantity(product);
   const activeVariantId = useActiveVariant(product.id);
   const hasVariants = (product.variants?.length ?? 0) > 0;
@@ -38,9 +46,9 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article
       className={cn(
-        // Horizontal layout (Figma): image column | content column, 19px gap.
-        // Columns stretch to equal height so the image centres against the
-        // content and clears the absolute badge.
+        // Base (mobile + main desktop): horizontal image column | content
+        // column. Columns stretch to equal height so the image centres against
+        // the content and clears the absolute badge.
         "relative flex items-center rounded-card bg-card p-[11px]",
         // Transparent border when unselected keeps geometry stable on selection;
         // the selected purple is 70% opacity per the design (a softer purple).
@@ -48,6 +56,10 @@ export function ProductCard({ product }: { product: Product }) {
         selected
           ? "gap-[19px] border-2 border-brand/70"
           : "gap-[13px] border-2 border-transparent",
+        // Alt desktop: stack vertically (image on top, content below) and flex
+        // to fill an equal share of the horizontal card row the /alt step lays
+        // out (5-up).
+        isAlt && "lg:min-w-0 lg:flex-1 lg:flex-col lg:items-stretch lg:gap-3",
       )}
     >
       {product.discountBadge && (
@@ -56,7 +68,14 @@ export function ProductCard({ product }: { product: Product }) {
         </span>
       )}
 
-      <div className="flex w-24 shrink-0 items-center justify-center">
+      <div
+        className={cn(
+          "flex w-24 shrink-0 items-center justify-center",
+          // Alt desktop: the media spans the full card width with a fixed
+          // height, matching the image-on-top vertical card.
+          isAlt && "lg:h-[140px] lg:w-full lg:shrink",
+        )}
+      >
         {heroSrc ? (
           <Image
             src={heroSrc}

@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/cn";
+import type { LayoutVariant } from "@/lib/layout";
 import { getBundle } from "@/lib/domain/bundle";
 import type { Category } from "@/lib/domain/types";
 import { useBundleStore } from "@/lib/store/bundle-store";
@@ -25,7 +26,11 @@ const TOTAL_STEPS = steps.length;
  * "Next" buttons. The open step renders as a tinted rounded panel; collapsed
  * steps are hairline-divided rows (DESIGN-SPEC §1, §5).
  */
-export function StepAccordion() {
+export function StepAccordion({
+  variant = "main",
+}: {
+  variant?: LayoutVariant;
+}) {
   const openStep = useBundleStore((s) => s.openStep);
   const setOpenStep = useBundleStore((s) => s.setOpenStep);
 
@@ -39,7 +44,12 @@ export function StepAccordion() {
       className="flex flex-col"
     >
       {steps.map((category) => (
-        <Step key={category.id} category={category} onAdvance={setOpenStep} />
+        <Step
+          key={category.id}
+          category={category}
+          onAdvance={setOpenStep}
+          variant={variant}
+        />
       ))}
     </Accordion>
   );
@@ -48,10 +58,13 @@ export function StepAccordion() {
 function Step({
   category,
   onAdvance,
+  variant,
 }: {
   category: Category;
   onAdvance: (step: number) => void;
+  variant: LayoutVariant;
 }) {
+  const isAlt = variant === "alt";
   const counts = useSelectedCounts();
   const count = counts[category.id];
   const products = bundle.products.filter((p) => p.category === category.id);
@@ -70,7 +83,13 @@ function Step({
     >
       <AccordionHeader>
         <AccordionTrigger className="group flex w-full cursor-pointer flex-col gap-2 px-[15px] py-[15px] text-left">
-          <span className="text-eyebrow text-label uppercase lg:group-data-[state=open]:text-[12px] lg:group-data-[state=open]:leading-[12px]">
+          <span
+            className={cn(
+              "text-eyebrow text-label uppercase lg:group-data-[state=open]:text-[12px] lg:group-data-[state=open]:leading-[12px]",
+              // Alt desktop centres the step eyebrow above the full-width panel.
+              isAlt && "lg:w-full lg:text-center",
+            )}
+          >
             Step {category.step} of {TOTAL_STEPS}
           </span>
           {/* Title row. A full-bleed hairline sits under the eyebrow on every
@@ -81,7 +100,13 @@ function Step({
               name={category.icon}
               className="size-5 shrink-0 lg:size-[26px]"
             />
-            <span className="text-[18px] leading-[18px] font-semibold text-ink lg:text-[22px] lg:leading-[22px]">
+            <span
+              className={cn(
+                "text-[18px] leading-[18px] font-semibold text-ink lg:text-[22px] lg:leading-[22px]",
+                // Alt desktop titles are larger (28px vs 22px).
+                isAlt && "lg:text-[28px] lg:leading-[28px]",
+              )}
+            >
               {category.stepTitle}
             </span>
             <span className="ml-auto flex items-center gap-1.5 text-selected text-brand">
@@ -104,9 +129,19 @@ function Step({
       </AccordionHeader>
 
       <AccordionContent className="px-[15px] pb-[15px]">
-        <div className="grid grid-cols-1 gap-[13px] sm:grid-cols-2 sm:[&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:w-[calc(50%-6.5px)] sm:[&>*:last-child:nth-child(odd)]:justify-self-center">
+        <div
+          className={cn(
+            // Shared mobile/tablet grid (1-up → 2-up at sm).
+            "grid grid-cols-1 gap-[13px] sm:grid-cols-2",
+            isAlt
+              ? // Alt desktop: one horizontal row of equal-width vertical cards.
+                "lg:flex lg:gap-[15px]"
+              : // Main desktop: 2-up grid, last odd card centred at half width.
+                "sm:[&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:w-[calc(50%-6.5px)] sm:[&>*:last-child:nth-child(odd)]:justify-self-center",
+          )}
+        >
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} variant={variant} />
           ))}
         </div>
         {nextStep && (
