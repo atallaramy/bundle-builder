@@ -50,12 +50,13 @@ export function ProductCard({
         // column. Columns stretch to equal height so the image centres against
         // the content and clears the absolute badge.
         "relative flex items-center rounded-card bg-card p-[11px]",
-        // Transparent border when unselected keeps geometry stable on selection;
-        // the selected purple is 70% opacity per the design (a softer purple).
-        // Image→content gap is state-dependent in Figma: 19px selected, 13px not.
+        // Selected: a 2px brand ring drawn as an INSET shadow, matching Figma's
+        // inside-aligned stroke — it overlaps rather than insetting content the
+        // way a layout border would, so geometry is identical selected/unselected
+        // (no jump). Image→content gap is state-dependent: 19px selected, 13px not.
         selected
-          ? "gap-[19px] border-2 border-brand"
-          : "gap-[13px] border-2 border-transparent",
+          ? "gap-[19px] shadow-[inset_0_0_0_2px_var(--color-brand)]"
+          : "gap-[13px]",
         // Alt desktop: stack vertically (image on top, content below) and flex
         // to fill an equal share of the horizontal card row the /alt step lays
         // out (5-up).
@@ -70,7 +71,10 @@ export function ProductCard({
 
       <div
         className={cn(
-          "flex w-24 shrink-0 items-center justify-center",
+          // Figma media box is ~101px wide; our square assets render undistorted
+          // at 101×101 (matches the doorbell/battery media exactly; the tall
+          // cameras' 101×137 can't be filled without cropping square art).
+          "flex size-[101px] shrink-0 items-center justify-center",
           // Alt desktop: the media spans the full card width with a fixed
           // height, matching the image-on-top vertical card.
           isAlt && "lg:h-[140px] lg:w-full lg:shrink",
@@ -80,8 +84,8 @@ export function ProductCard({
           <Image
             src={heroSrc}
             alt={product.name}
-            width={96}
-            height={96}
+            width={101}
+            height={101}
             className="size-full object-contain"
           />
         ) : product.icon ? (
@@ -89,6 +93,12 @@ export function ProductCard({
         ) : null}
       </div>
 
+      {/* Content column fills the card (flex-1). Figma leaves ~20px dead space
+          before the right padding on the narrower unselected cards, so their
+          price sits slightly further right here than in Figma — a minor
+          spacing delta we accept: capping the width to Figma's 205px would wrap
+          the 3-chip cards, since our Manrope chip labels run ~6px wider than the
+          design's Gilroy (the design fits 3 chips in exactly 205px). */}
       <div className="flex min-w-0 flex-1 flex-col gap-2.5">
         <div className="flex flex-col gap-2">
           <h4 className="text-product text-ink-soft">{product.name}</h4>
