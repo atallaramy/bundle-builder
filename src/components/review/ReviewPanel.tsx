@@ -88,7 +88,14 @@ export function ReviewPanel({ variant = "main" }: { variant?: LayoutVariant }) {
             <p className="text-category text-subhead uppercase">
               {group.category.reviewLabel}
             </p>
-            <div className="mt-2 flex flex-col gap-3">
+            {/* Inter-row gap differs by group in the design (all layouts): the
+                cameras rows sit 12px apart, every other group 8px. */}
+            <div
+              className={cn(
+                "mt-2 flex flex-col",
+                group.category.id === "cameras" ? "gap-3" : "gap-2",
+              )}
+            >
               {group.lines.map((line) => (
                 <LineItem key={line.key} line={line} variant={variant} />
               ))}
