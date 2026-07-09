@@ -40,9 +40,9 @@ export function Totals() {
         <Image
           src={panel.guarantee.image}
           alt={panel.guarantee.text}
-          width={72}
-          height={72}
-          className="size-[72px] shrink-0 object-contain"
+          width={78}
+          height={78}
+          className="size-[78px] shrink-0 object-contain"
         />
         <div className="flex flex-col items-end gap-1.5">
           <span className="rounded-[3px] bg-brand px-2 py-0.5 text-[12px] font-medium tracking-[-0.6px] text-white">

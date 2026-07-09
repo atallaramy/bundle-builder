@@ -23,7 +23,7 @@ export default function Home() {
         <div className="w-full lg:w-[768px] lg:shrink-0">
           {/* Page title: the design shows it only on mobile, but it stays in the
               accessibility tree on desktop (sr-only) so the page always has an h1. */}
-          <h1 className="mb-5 text-center text-page-title text-ink lg:sr-only">
+          <h1 className="mb-5 text-center text-page-title text-ink-soft lg:sr-only">
             Let&apos;s get started!
           </h1>
           {/* Section heading for the builder column — keeps heading order

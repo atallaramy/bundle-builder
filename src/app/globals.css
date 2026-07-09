@@ -22,7 +22,7 @@
   --color-subhead: #a8b2bd; /* category subheads (CAMERAS, SENSORS…) */
   --color-danger: #d8392b; /* strike-through / compare-at price */
   --color-success: #0aa288; /* savings text ("Congrats!") */
-  --color-link: #0046c7; /* "Learn More" link */
+  --color-link: #0000ee; /* "Learn More" link (Figma value) */
   --color-panel: #edf4ff; /* panel / step background tint */
   --color-panel-alt: #f0f4f7; /* alternate tint */
   --color-card: #ffffff; /* card background */
