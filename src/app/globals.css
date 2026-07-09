@@ -74,7 +74,7 @@
   --text-next--font-weight: 600;
 
   --text-product: 16px; /* product title */
-  --text-product--line-height: 18px;
+  --text-product--line-height: 16px;
   --text-product--letter-spacing: 0.6px;
   --text-product--font-weight: 600;
 
@@ -87,10 +87,15 @@
   --text-price--letter-spacing: 0.08px;
   --text-price--font-weight: 600;
 
-  --text-body: 14px; /* body / description */
+  --text-body: 14px; /* review subtitle, shipping label, demo copy */
   --text-body--line-height: 18px;
   --text-body--letter-spacing: 0.6px;
   --text-body--font-weight: 500;
+
+  --text-description: 12px; /* product-card description (tighter than body) */
+  --text-description--line-height: 15.6px;
+  --text-description--letter-spacing: 0.6px;
+  --text-description--font-weight: 500;
 
   --text-stepper: 16px; /* stepper number (card); review uses 14px */
   --text-stepper--line-height: 20px;
@@ -116,16 +121,16 @@
   --text-variant--font-weight: 500;
 
   --text-selected: 14px; /* "N selected" */
-  --text-selected--line-height: 18px;
+  --text-selected--line-height: 16px;
   --text-selected--font-weight: 500;
 
   --text-savings: 12px; /* "Congrats! …" savings callout */
-  --text-savings--line-height: 18px;
+  --text-savings--line-height: 12px;
   --text-savings--letter-spacing: -0.06px;
   --text-savings--font-weight: 600;
 
-  --text-save-later: 13px; /* "Save my system for later" */
-  --text-save-later--line-height: 18px;
+  --text-save-later: 14px; /* "Save my system for later" */
+  --text-save-later--line-height: 16.8px;
   --text-save-later--letter-spacing: -0.02px;
   --text-save-later--font-weight: 400;
 }
