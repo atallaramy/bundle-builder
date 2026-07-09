@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { cn } from "@/lib/cn";
 import type { LayoutVariant } from "@/lib/layout";
+import { useStickyBottom } from "@/lib/use-sticky-bottom";
 import { useBundleStore } from "@/lib/store/bundle-store";
 import { StepAccordion } from "@/components/builder/StepAccordion";
 import { ReviewPanel } from "@/components/review/ReviewPanel";
@@ -24,6 +25,10 @@ export function AppShell({ variant }: { variant: LayoutVariant }) {
   }, [restore]);
 
   const isAlt = variant === "alt";
+  // Two-column review is sticky and can outgrow the viewport; follow the scroll
+  // to its bottom instead of pinning it to the top. Inert in the alt (stacked)
+  // layout, where the review isn't sticky.
+  const { ref: reviewRef, top: reviewTop } = useStickyBottom();
 
   return (
     <main className="min-h-full">
@@ -49,10 +54,14 @@ export function AppShell({ variant }: { variant: LayoutVariant }) {
           <StepAccordion variant={variant} />
         </div>
         <div
+          ref={isAlt ? undefined : reviewRef}
           className={cn(
             "w-full",
-            !isAlt && "lg:sticky lg:top-6 lg:w-[399px] lg:shrink-0",
+            !isAlt && "lg:sticky lg:w-[399px] lg:shrink-0",
           )}
+          // `top` is applied only where the panel is sticky (lg + two-column);
+          // it's inert while the element is statically positioned (mobile/alt).
+          style={isAlt ? undefined : { top: reviewTop }}
         >
           <ReviewPanel variant={variant} />
         </div>
