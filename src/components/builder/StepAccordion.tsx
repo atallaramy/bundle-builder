@@ -105,7 +105,7 @@ function Step({
               bleed past the trigger's 15px padding on BOTH sides (plain `w-full`
               only shifts the box, leaving it 30px short on the right). Padding
               20px top/bottom matches Figma's 67px collapsed row rhythm. */}
-          <span className="-mx-[15px] flex w-[calc(100%+30px)] items-center gap-2.5 border-t-[0.5px] border-[#1f1f1f] px-[15px] pt-5 group-data-[state=closed]:border-b-[0.5px] group-data-[state=closed]:pb-5">
+          <span className="-mx-[15px] flex w-[calc(100%+30px)] items-center gap-2 border-t-[0.5px] border-[#1f1f1f] px-[15px] pt-5 group-data-[state=closed]:border-b-[0.5px] group-data-[state=closed]:pb-5">
             <Icon
               name={category.icon}
               className="size-5 shrink-0 lg:size-[26px]"
@@ -119,7 +119,7 @@ function Step({
             >
               {category.stepTitle}
             </span>
-            <span className="ml-auto flex items-center gap-1.5 text-selected text-brand">
+            <span className="ml-auto flex items-center gap-1 text-selected text-brand">
               {/* Count: always shown when open; on collapsed steps it stays in
                   the single-column layout but hides once the two-column desktop
                   layout kicks in at lg, leaving just the chevron (§5). lg mirrors
@@ -138,16 +138,16 @@ function Step({
         </AccordionTrigger>
       </AccordionHeader>
 
-      <AccordionContent className="px-[15px] pb-[15px]">
+      <AccordionContent className="px-[15px] pb-[20px]">
         <div
           className={cn(
             // Shared mobile/tablet grid (1-up → 2-up at sm).
-            "grid grid-cols-1 gap-[13px] sm:grid-cols-2",
+            "grid grid-cols-1 gap-[15px] sm:grid-cols-2",
             isAlt
               ? // Alt desktop: one horizontal row of equal-width vertical cards.
                 "lg:flex lg:gap-[15px]"
               : // Main desktop: 2-up grid, last odd card centred at half width.
-                "sm:[&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:w-[calc(50%-6.5px)] sm:[&>*:last-child:nth-child(odd)]:justify-self-center",
+                "sm:[&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:w-[calc(50%-7.5px)] sm:[&>*:last-child:nth-child(odd)]:justify-self-center",
           )}
         >
           {products.map((product) => (
@@ -155,11 +155,11 @@ function Step({
           ))}
         </div>
         {nextStep && (
-          <div className="mt-[13px] flex justify-center">
+          <div className="mt-[15px] flex justify-center">
             <button
               type="button"
               onClick={() => onAdvance(nextStep.step)}
-              className="cursor-pointer rounded-[7px] border border-brand px-6 py-2.5 text-next text-brand transition-colors hover:bg-brand hover:text-white"
+              className="cursor-pointer rounded-[7px] border border-brand px-6 py-[6.5px] text-next text-brand transition-colors hover:bg-brand hover:text-white"
             >
               Next: {nextStep.stepTitle}
             </button>
