@@ -42,7 +42,14 @@ export function AppShell({ variant }: { variant: LayoutVariant }) {
               "max-w-[1191px] lg:flex-row lg:items-start lg:justify-center",
         )}
       >
-        <div className={cn("w-full", !isAlt && "lg:w-[768px] lg:shrink-0")}>
+        <div
+          className={cn(
+            // Mobile: the builder is full-bleed too (Figma phone frame — full-width
+            // step dividers and panel), matching the review's edge-to-edge treatment.
+            "w-full max-lg:-mx-4 max-lg:w-[calc(100%+2rem)]",
+            !isAlt && "lg:mx-0 lg:w-[768px] lg:shrink-0",
+          )}
+        >
           {/* Page title: the design shows it only on mobile, but it stays in the
               accessibility tree on desktop (sr-only) so the page always has an h1. */}
           <h1 className="mb-5 text-center text-page-title text-ink-soft lg:sr-only">

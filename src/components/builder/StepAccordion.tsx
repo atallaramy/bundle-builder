@@ -79,7 +79,8 @@ function Step({
         // Open step: tinted rounded panel (fill + radius only — the reference
         // panel carries no stroke). Inter-step spacing is the parent's 13px gap;
         // the step-separator hairlines live on the title row below, not here.
-        "data-[state=open]:rounded-card data-[state=open]:bg-panel",
+        // Mobile: full-bleed, so square corners (matches the full-bleed review).
+        "data-[state=open]:rounded-card data-[state=open]:bg-panel max-lg:data-[state=open]:rounded-none",
       )}
     >
       <AccordionHeader>
