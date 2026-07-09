@@ -35,7 +35,14 @@ export function Price({
       : "text-[14px] leading-4 tracking-[0.07px]";
 
   return (
-    <div className={cn("flex flex-col items-end leading-none", className)}>
+    <div
+      className={cn(
+        "flex flex-col items-end leading-none",
+        // Card price stack has a 3px compare→active gap (Figma); review abuts.
+        tone === "card" && "gap-[3px]",
+        className,
+      )}
+    >
       {showCompare && (
         <span
           className={cn(

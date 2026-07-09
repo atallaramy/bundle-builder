@@ -74,10 +74,11 @@ export function QtyStepper({
           and the review row, so a shared live region would double-announce. */}
       <span
         className={cn(
-          "text-center font-normal text-ink tabular-nums",
+          "text-center text-ink tabular-nums",
+          // Digit weight is a per-tone design axis: card 500, review 600.
           tone === "card"
-            ? "min-w-5 text-[16px] leading-5"
-            : "text-[14px] leading-5",
+            ? "min-w-5 text-[16px] leading-5 font-medium"
+            : "text-[14px] leading-4 font-semibold",
         )}
       >
         {qty}
@@ -137,7 +138,7 @@ function StepButton({
         onClick === undefined ? "cursor-not-allowed" : "cursor-pointer",
       )}
     >
-      <Icon name={icon} className="size-3" />
+      <Icon name={icon} className="size-2" />
     </button>
   );
 }

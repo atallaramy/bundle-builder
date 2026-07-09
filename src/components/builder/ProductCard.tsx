@@ -54,7 +54,7 @@ export function ProductCard({
         // the selected purple is 70% opacity per the design (a softer purple).
         // Image→content gap is state-dependent in Figma: 19px selected, 13px not.
         selected
-          ? "gap-[19px] border-2 border-brand/70"
+          ? "gap-[19px] border-2 border-brand"
           : "gap-[13px] border-2 border-transparent",
         // Alt desktop: stack vertically (image on top, content below) and flex
         // to fill an equal share of the horizontal card row the /alt step lays
@@ -91,9 +91,9 @@ export function ProductCard({
 
       <div className="flex min-w-0 flex-1 flex-col gap-2.5">
         <div className="flex flex-col gap-2">
-          <h4 className="text-product text-ink">{product.name}</h4>
+          <h4 className="text-product text-ink-soft">{product.name}</h4>
           {product.description && (
-            <p className="text-body text-ink-soft/75">
+            <p className="text-description text-ink-soft/75">
               {product.description}{" "}
               {product.learnMore && (
                 // Placeholder — the brief specifies no destination for this link.

@@ -22,7 +22,7 @@ const VIEWBOX: Partial<Record<IconGlyph, string>> = {
   truck: "0 0 58 58",
   "plan-logo": "0 0 40 48",
   plus: "0 0 16 16",
-  minus: "0 0 16 20",
+  minus: "0 0 16 16",
 };
 
 function glyph(name: IconGlyph) {
