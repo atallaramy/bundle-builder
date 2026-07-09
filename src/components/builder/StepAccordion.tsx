@@ -41,7 +41,9 @@ export function StepAccordion({
       // Radix speaks strings; map to/from our numeric step ("" = all closed).
       value={openStep != null ? String(openStep) : ""}
       onValueChange={(value) => setOpenStep(value ? Number(value) : null)}
-      className="flex flex-col"
+      // 13px between every step (DESIGN-SPEC §1) — one gap rule for both the
+      // tinted open panel and the collapsed rows, so the rhythm matches Figma.
+      className="flex flex-col gap-[13px]"
     >
       {steps.map((category) => (
         <Step
@@ -74,15 +76,19 @@ function Step({
     <AccordionItem
       value={String(category.step)}
       className={cn(
-        // Open step: tinted rounded panel with 13px breathing room around it
-        // (fill + radius only — the reference panel carries no stroke). The
-        // step-separator hairlines live on the title row below, not here.
-        "data-[state=open]:my-[13px] data-[state=open]:rounded-card data-[state=open]:bg-panel",
-        "first:mt-0",
+        // Open step: tinted rounded panel (fill + radius only — the reference
+        // panel carries no stroke). Inter-step spacing is the parent's 13px gap;
+        // the step-separator hairlines live on the title row below, not here.
+        "data-[state=open]:rounded-card data-[state=open]:bg-panel",
       )}
     >
       <AccordionHeader>
-        <AccordionTrigger className="group flex w-full cursor-pointer flex-col gap-2 px-[15px] py-[15px] text-left">
+        {/* Only the open (tinted) panel carries the 15px inner padding (Figma
+            Frame 538). Collapsed rows have no vertical padding — the eyebrow sits
+            at the cell top and the bottom hairline at its base — so the 13px
+            inter-step gap does the spacing, matching Figma's tight rhythm. The
+            5px gap is the eyebrow→hairline spacing on every step. */}
+        <AccordionTrigger className="group flex w-full cursor-pointer flex-col gap-[5px] px-[15px] text-left data-[state=open]:py-[15px]">
           <span
             className={cn(
               "text-eyebrow text-label uppercase lg:group-data-[state=open]:text-[12px] lg:group-data-[state=open]:leading-[12px]",
@@ -93,9 +99,13 @@ function Step({
             Step {category.step} of {TOTAL_STEPS}
           </span>
           {/* Title row. A full-bleed hairline sits under the eyebrow on every
-              step (Figma "Frame 25" top stroke); collapsed steps add a second
-              hairline under the title (its bottom stroke). */}
-          <span className="-mx-[15px] flex w-full items-center gap-2.5 border-t-[0.5px] border-[#1f1f1f] px-[15px] pt-3.5 group-data-[state=closed]:border-b-[0.5px] group-data-[state=closed]:pb-3.5">
+              step (Figma "Frame 25" top stroke, spanning the whole 768px column);
+              collapsed steps add a second hairline under the title (its bottom
+              stroke). `w-[calc(100%+30px)]` + `-mx-[15px]` makes the border-box
+              bleed past the trigger's 15px padding on BOTH sides (plain `w-full`
+              only shifts the box, leaving it 30px short on the right). Padding
+              20px top/bottom matches Figma's 67px collapsed row rhythm. */}
+          <span className="-mx-[15px] flex w-[calc(100%+30px)] items-center gap-2.5 border-t-[0.5px] border-[#1f1f1f] px-[15px] pt-5 group-data-[state=closed]:border-b-[0.5px] group-data-[state=closed]:pb-5">
             <Icon
               name={category.icon}
               className="size-5 shrink-0 lg:size-[26px]"
