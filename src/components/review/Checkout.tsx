@@ -34,11 +34,11 @@ export function Checkout() {
   }
 
   return (
-    <div className="mt-4 flex flex-col items-center gap-3">
+    <div className="mt-1 flex flex-col items-center gap-2">
       <button
         type="button"
         onClick={() => setCheckedOut(true)}
-        className="w-full cursor-pointer rounded-xs bg-brand py-3.5 text-checkout text-white transition-colors hover:bg-brand/90"
+        className="w-full cursor-pointer rounded-xs bg-brand py-[13px] text-checkout text-white transition-colors hover:bg-brand/90"
       >
         Checkout
       </button>

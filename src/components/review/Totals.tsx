@@ -19,18 +19,18 @@ export function Totals() {
 
   return (
     <div>
-      <div className="flex items-center gap-3 border-t border-line py-3">
+      <div className="flex items-center gap-3 border-t border-line pt-[15px] pb-0">
         <div className="flex size-[41px] shrink-0 items-center justify-center rounded-control bg-card">
           <Icon name="truck" className="size-[29px]" />
         </div>
-        <span className="flex-1 text-body font-semibold text-ink">
+        <span className="flex-1 text-body leading-4 tracking-[0.07px] text-ink">
           {panel.shipping.label}
         </span>
         <div className="flex flex-col items-end leading-none">
-          <span className="text-[14px] leading-4 font-medium text-muted line-through">
+          <span className="text-[14px] leading-4 font-medium tracking-[0.07px] text-muted line-through">
             {formatCents(toCents(panel.shipping.compareAt))}
           </span>
-          <span className="text-[14px] leading-4 font-semibold text-brand">
+          <span className="text-[14px] leading-4 font-semibold tracking-[0.07px] text-brand">
             FREE
           </span>
         </div>
@@ -44,8 +44,8 @@ export function Totals() {
           height={78}
           className="size-[78px] shrink-0 object-contain"
         />
-        <div className="flex flex-col items-end gap-1.5">
-          <span className="rounded-[3px] bg-brand px-2 py-0.5 text-[12px] font-medium tracking-[-0.6px] text-white">
+        <div className="flex flex-col items-end gap-2">
+          <span className="rounded-[3px] bg-brand px-2 py-[1.7px] text-[12px] leading-[14.56px] font-medium tracking-[-0.6px] text-white">
             as low as {formatCents(financingCents)}/mo
           </span>
           <div className="flex items-baseline gap-2">

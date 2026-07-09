@@ -26,19 +26,29 @@ export function ReviewPanel({ variant = "main" }: { variant?: LayoutVariant }) {
         // line groups on the left, the totals/checkout summary on the right.
         isAlt
           ? "flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-10"
-          : "flex flex-col",
+          : // Desktop-main: content is inset 20/29 past the 15px eyebrow gutter,
+            // and the bottom-left corner is square (a Figma quirk — an inner
+            // same-fill rect reaches the bottom-left but stops short on the right).
+            "flex flex-col lg:rounded-bl-none lg:py-[15px] lg:pr-[29px] lg:pl-[20px]",
       )}
     >
       <div className="flex flex-col">
-        <p className="text-eyebrow text-label uppercase lg:text-[12px] lg:leading-[12px]">
+        <p
+          className={cn(
+            "text-eyebrow text-label uppercase lg:text-[12px] lg:leading-[12px]",
+            // Pull the eyebrow back to the 15px panel gutter (content sits at 20).
+            !isAlt && "lg:-ml-[5px]",
+          )}
+        >
           Review
         </p>
         {/* Deliberately distinct from the step section titles: 0.6px tracking +
-            #1f1f1f (ink-soft), not the step title's ls0/#0b0d10. */}
-        <h2 className="mt-1 text-section tracking-[0.6px] text-ink-soft">
+            #1f1f1f (ink-soft), not the step title's ls0/#0b0d10. Line-height is
+            22 here (tight, = font size), not the shared token's 26. */}
+        <h2 className="mt-[25px] text-section leading-[22px] tracking-[0.6px] text-ink-soft">
           Your security system
         </h2>
-        <p className="mt-1 text-body text-ink-soft">
+        <p className="mt-[5px] text-body text-ink-soft/75">
           Review your personalized protection system designed to keep what
           matters most safe.
         </p>
@@ -46,12 +56,12 @@ export function ReviewPanel({ variant = "main" }: { variant?: LayoutVariant }) {
         {groups.map((group) => (
           <section
             key={group.category.id}
-            className="mt-3 border-t border-line pt-3"
+            className="mt-[10px] border-t border-line pt-[14px]"
           >
             <p className="text-category text-subhead uppercase">
               {group.category.reviewLabel}
             </p>
-            <div>
+            <div className="mt-2 flex flex-col gap-3">
               {group.lines.map((line) => (
                 <LineItem key={line.key} line={line} />
               ))}
