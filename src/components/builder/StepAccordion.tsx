@@ -92,8 +92,11 @@ function Step({
           <span
             className={cn(
               "text-eyebrow text-label uppercase lg:group-data-[state=open]:text-[12px] lg:group-data-[state=open]:leading-[12px]",
-              // Alt desktop centres the step eyebrow above the full-width panel.
-              isAlt && "lg:w-full lg:text-center",
+              // Alt desktop: the eyebrow is 12px on every step (open AND collapsed,
+              // unlike main which keeps collapsed at 10px) and centred above the
+              // full-width panel.
+              isAlt &&
+                "lg:w-full lg:text-center lg:text-[12px] lg:leading-[12px]",
             )}
           >
             Step {category.step} of {TOTAL_STEPS}

@@ -104,9 +104,22 @@ export function ProductCard({
         )}
       >
         <div className="flex flex-col gap-2">
-          <h4 className="text-product text-ink-soft">{product.name}</h4>
+          {/* Alt desktop cards use larger type (Figma): title 18px, desc 14px. */}
+          <h4
+            className={cn(
+              "text-product text-ink-soft",
+              isAlt && "lg:text-[18px] lg:leading-[18px]",
+            )}
+          >
+            {product.name}
+          </h4>
           {product.description && (
-            <p className="text-description text-ink-soft/75">
+            <p
+              className={cn(
+                "text-description text-ink-soft/75",
+                isAlt && "lg:text-[14px] lg:leading-[18.2px]",
+              )}
+            >
               {product.description}{" "}
               {product.learnMore && (
                 // Placeholder — the brief specifies no destination for this link.
