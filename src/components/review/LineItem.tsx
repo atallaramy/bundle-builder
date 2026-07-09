@@ -24,7 +24,9 @@ export function LineItem({ line }: { line: CartLine }) {
   return (
     <div className="flex items-center gap-3 py-3">
       {isPlan && line.icon ? (
-        <Icon name={line.icon} className="size-6 shrink-0" />
+        // Plan lockup renders ~20x24 (viewBox 40:48), smaller than the 26px
+        // step-header shield — a deliberate size split, not a shared slot.
+        <Icon name={line.icon} className="h-6 w-5 shrink-0" />
       ) : (
         <div className="flex size-[41px] shrink-0 items-center justify-center overflow-hidden rounded-[5px] bg-card">
           {line.image && (

@@ -20,8 +20,8 @@ export function Totals() {
   return (
     <div>
       <div className="flex items-center gap-3 border-t border-line py-3">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-xs bg-card">
-          <Icon name="truck" className="size-6" />
+        <div className="flex size-[41px] shrink-0 items-center justify-center rounded-control bg-card">
+          <Icon name="truck" className="size-[29px]" />
         </div>
         <span className="flex-1 text-body font-semibold text-ink">
           {panel.shipping.label}

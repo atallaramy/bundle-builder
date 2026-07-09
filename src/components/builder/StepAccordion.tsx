@@ -77,7 +77,10 @@ function Step({
               step (Figma "Frame 25" top stroke); collapsed steps add a second
               hairline under the title (its bottom stroke). */}
           <span className="-mx-[15px] flex w-full items-center gap-2.5 border-t-[0.5px] border-[#1f1f1f] px-[15px] pt-3.5 group-data-[state=closed]:border-b-[0.5px] group-data-[state=closed]:pb-3.5">
-            <Icon name={category.icon} className="size-6 shrink-0" />
+            <Icon
+              name={category.icon}
+              className="size-5 shrink-0 lg:size-[26px]"
+            />
             <span className="text-[18px] leading-[18px] font-semibold text-ink lg:text-[22px] lg:leading-[22px]">
               {category.stepTitle}
             </span>
