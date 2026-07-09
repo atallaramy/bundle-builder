@@ -56,7 +56,10 @@ export function AppShell({ variant }: { variant: LayoutVariant }) {
         <div
           ref={isAlt ? undefined : reviewRef}
           className={cn(
-            "w-full",
+            // Mobile: the review panel is full-bleed (edge to edge), matching the
+            // Figma phone frame — cancel the page's px-4 gutter so its content
+            // width isn't double-inset. Desktop keeps the columned width.
+            "w-full max-lg:-mx-4 max-lg:w-[calc(100%+2rem)]",
             !isAlt && "lg:sticky lg:w-[399px] lg:shrink-0",
           )}
           // `top` is applied only where the panel is sticky (lg + two-column);

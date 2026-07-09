@@ -27,7 +27,9 @@ export function ReviewPanel({ variant = "main" }: { variant?: LayoutVariant }) {
     <aside
       aria-label="Your security system"
       className={cn(
-        "rounded-card bg-panel p-[15px]",
+        // Mobile: full-bleed panel — square corners, 20px content padding (Figma
+        // phone frame). Desktop rounds the card and uses the 15px gutter.
+        "rounded-card bg-panel p-[15px] max-lg:rounded-none max-lg:p-5",
         // Main: a single narrow column. Alt desktop: two columns — header +
         // line groups on the left, the totals/checkout summary on the right.
         isAlt
