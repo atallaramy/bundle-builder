@@ -15,8 +15,8 @@ export interface CartLine {
   productId: string;
   variantId?: string;
   name: string;
-  variantLabel?: string;
   image: string;
+  imageFit?: "cover" | "contain"; // review-tile object-fit (Pan v3 crops)
   icon?: IconName; // shown in place of an image when the product has none (plan)
   category: CategoryId;
   unitActive: number; // dollars
@@ -60,6 +60,7 @@ export function buildCartLines(
       name: p.name,
       category: p.category,
       icon: p.icon,
+      imageFit: p.imageFit,
       unitActive: p.price.active,
       unitCompare: p.price.compareAt,
       unit: p.price.unit,
@@ -76,7 +77,6 @@ export function buildCartLines(
           key: lineKey(p.id, v.id),
           productId: p.id,
           variantId: v.id,
-          variantLabel: v.label,
           image: imageFor(p, v),
           qty,
         });

@@ -66,6 +66,7 @@
       "discountBadge": "Save 12%",
       "learnMore": true,
       "image": "/products/cam-pan-v3.png",
+      "imageFit": "cover",
       "price": { "active": 34.98, "compareAt": 39.98 },
       "variants": [
         {
@@ -141,7 +142,7 @@
       "id": "cam-unlimited",
       "name": "Cam Unlimited",
       "category": "plan",
-      "icon": "shield",
+      "icon": "plan-logo",
       "hasStepper": false,
       "price": { "active": 9.99, "compareAt": 12.99, "unit": "mo" },
       "seededQuantity": 1
@@ -176,7 +177,7 @@
     "shipping": { "label": "Fast Shipping", "compareAt": 5.99 },
     "guarantee": {
       "image": "/products/satisfaction-badge.png",
-      "text": "30-day hassle-free returns"
+      "text": "100% Wyze satisfaction guarantee"
     },
     "financing": { "months": 12 }
   }

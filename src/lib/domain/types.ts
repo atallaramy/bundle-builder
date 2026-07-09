@@ -8,8 +8,11 @@
 
 export type CategoryId = "cameras" | "plan" | "sensors" | "accessories";
 
-/** Named icons drawn as inline SVG by the UI (kept out of the data as markup). */
-export type IconName = "camera" | "shield" | "sensor" | "grid";
+/** Named icons drawn as inline SVG by the UI (kept out of the data as markup).
+ *  `plan-logo` (the blue Wyze plan lockup) is a product icon only, never a
+ *  category/step-header icon — the bundle validator keeps step icons to the
+ *  four header glyphs. */
+export type IconName = "camera" | "shield" | "sensor" | "grid" | "plan-logo";
 
 /** A category = one accordion step + one review-panel group. Step order and
  *  review order differ (Plan is step 2 but listed last in the review). */
@@ -46,6 +49,7 @@ export interface Product {
   learnMore?: boolean; // show the "Learn More" link
   image?: string; // default hero; absent for the plan (uses `icon`)
   icon?: IconName; // e.g. the plan's shield when there is no product image
+  imageFit?: "cover" | "contain"; // review-tile fit; Pan v3 crops (Figma FILL), others contain
   price: Price;
   variants?: Variant[]; // absent => single, unvariated product (e.g. doorbell)
   seededQuantity?: number; // initial qty for unvariated products
