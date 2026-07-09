@@ -19,22 +19,24 @@ export function Totals() {
 
   return (
     <div>
-      <div className="flex items-center gap-3 border-t border-line-soft py-3">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-xs border border-line-soft bg-card">
-          <Icon name="truck" className="size-5 text-brand" />
+      <div className="flex items-center gap-3 border-t border-line py-3">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-xs bg-card">
+          <Icon name="truck" className="size-6" />
         </div>
         <span className="flex-1 text-body font-semibold text-ink">
           {panel.shipping.label}
         </span>
         <div className="flex flex-col items-end leading-none">
-          <span className="text-price font-medium text-muted line-through">
+          <span className="text-[14px] leading-4 font-medium text-muted line-through">
             {formatCents(toCents(panel.shipping.compareAt))}
           </span>
-          <span className="text-price text-brand">FREE</span>
+          <span className="text-[14px] leading-4 font-semibold text-brand">
+            FREE
+          </span>
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-3 border-t border-line-soft pt-4">
+      <div className="flex items-center justify-between gap-3 pt-4">
         <Image
           src={panel.guarantee.image}
           alt={panel.guarantee.text}
@@ -43,11 +45,11 @@ export function Totals() {
           className="size-[72px] shrink-0 object-contain"
         />
         <div className="flex flex-col items-end gap-1.5">
-          <span className="rounded-control bg-brand px-2 py-1 text-badge text-white">
+          <span className="rounded-[3px] bg-brand px-2 py-0.5 text-[12px] font-medium tracking-[-0.6px] text-white">
             as low as {formatCents(financingCents)}/mo
           </span>
           <div className="flex items-baseline gap-2">
-            <span className="text-price font-medium text-muted line-through">
+            <span className="text-[18px] leading-5 font-medium text-muted line-through">
               {formatCents(totals.compareCents)}
             </span>
             <span className="text-total text-brand">

@@ -24,17 +24,21 @@ export function LineItem({ line }: { line: CartLine }) {
   return (
     <div className="flex items-center gap-3 py-3">
       {isPlan && line.icon ? (
-        <Icon name={line.icon} className="size-6 shrink-0 text-brand" />
+        <Icon name={line.icon} className="size-6 shrink-0" />
       ) : (
-        <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xs border border-line-soft bg-card">
+        <div className="flex size-[41px] shrink-0 items-center justify-center overflow-hidden rounded-[5px] bg-card">
           {line.image && (
             <Image
               // Decorative — the line name is announced by the adjacent text.
               src={line.image}
               alt=""
-              width={40}
-              height={40}
-              className="size-full object-contain"
+              width={41}
+              height={41}
+              className={
+                line.imageFit === "cover"
+                  ? "size-full object-cover"
+                  : "size-full object-contain"
+              }
             />
           )}
         </div>
@@ -44,12 +48,9 @@ export function LineItem({ line }: { line: CartLine }) {
         {isPlan ? (
           <PlanName name={line.name} />
         ) : (
-          <p className="text-body font-semibold text-ink">
+          <p className="text-[14px] leading-4 font-medium tracking-[0.07px] text-ink">
             {line.name}
             {line.required && " (Required)"}
-            {line.variantLabel && (
-              <span className="text-muted"> · {line.variantLabel}</span>
-            )}
           </p>
         )}
       </div>
@@ -60,6 +61,7 @@ export function LineItem({ line }: { line: CartLine }) {
           variantId={line.variantId}
           disabled={line.required}
           label={line.name}
+          tone="review"
         />
       )}
 
@@ -78,8 +80,10 @@ export function LineItem({ line }: { line: CartLine }) {
 function PlanName({ name }: { name: string }) {
   const [first, ...rest] = name.split(" ");
   return (
-    <p className="text-plan">
-      <span className="text-ink">{first}</span>
+    // Bold two-tone lockup: first word pure black, rest brand purple. 14px on
+    // mobile / 16px desktop (Figma; the 20px was the out-of-scope alt layout).
+    <p className="text-[14px] leading-4 font-bold tracking-[-0.028px] lg:text-[16px] lg:tracking-[-0.032px]">
+      <span className="text-black">{first}</span>
       {rest.length > 0 && <span className="text-brand"> {rest.join(" ")}</span>}
     </p>
   );

@@ -38,7 +38,7 @@ export function Checkout() {
       <button
         type="button"
         onClick={() => setCheckedOut(true)}
-        className="w-full cursor-pointer rounded-card bg-brand py-3.5 text-checkout text-white transition-colors hover:bg-brand/90"
+        className="w-full cursor-pointer rounded-xs bg-brand py-3.5 text-checkout text-white transition-colors hover:bg-brand/90"
       >
         Checkout
       </button>
