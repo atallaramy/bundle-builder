@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { cn } from "@/lib/cn";
 import { toCents } from "@/lib/domain/money";
 import type { CartLine } from "@/lib/domain/cart";
 import { Icon } from "@/components/ui/icons";
@@ -22,39 +23,54 @@ export function LineItem({ line }: { line: CartLine }) {
   const isPlan = line.category === "plan";
 
   return (
-    <div className="flex items-center gap-3 py-3">
-      {isPlan && line.icon ? (
-        // Plan lockup renders ~20x24 (viewBox 40:48), smaller than the 26px
-        // step-header shield — a deliberate size split, not a shared slot.
-        <Icon name={line.icon} className="h-6 w-5 shrink-0" />
-      ) : (
-        <div className="flex size-[41px] shrink-0 items-center justify-center overflow-hidden rounded-[5px] bg-card">
-          {line.image && (
-            <Image
-              // Decorative — the line name is announced by the adjacent text.
-              src={line.image}
-              alt=""
-              width={41}
-              height={41}
-              className={
-                line.imageFit === "cover"
-                  ? "size-full object-cover"
-                  : "size-full object-contain"
-              }
-            />
+    <div
+      className={cn(
+        "flex items-center",
+        // The plan row is its own shape: space-between, a fixed 32px height and
+        // a tight 3px icon→name lockup. Product rows nest a 12px thumb→text
+        // group inside a 16px outer row gap (thumb→text 12, text→stepper→price 16).
+        isPlan ? "h-8 justify-between" : "gap-4 py-3",
+      )}
+    >
+      <div
+        className={cn(
+          "flex min-w-0 items-center",
+          isPlan ? "gap-[3px]" : "flex-1 gap-3",
+        )}
+      >
+        {isPlan && line.icon ? (
+          // Plan lockup renders ~20x24 (viewBox 40:48), smaller than the 26px
+          // step-header shield — a deliberate size split, not a shared slot.
+          <Icon name={line.icon} className="h-6 w-5 shrink-0" />
+        ) : (
+          <div className="flex size-[41px] shrink-0 items-center justify-center overflow-hidden rounded-[5px] bg-card">
+            {line.image && (
+              <Image
+                // Decorative — the line name is announced by the adjacent text.
+                src={line.image}
+                alt=""
+                width={41}
+                height={41}
+                className={
+                  line.imageFit === "cover"
+                    ? "size-full object-cover"
+                    : "size-full object-contain"
+                }
+              />
+            )}
+          </div>
+        )}
+
+        <div className="min-w-0 flex-1">
+          {isPlan ? (
+            <PlanName name={line.name} />
+          ) : (
+            <p className="text-[14px] leading-4 font-medium tracking-[0.07px] text-ink">
+              {line.name}
+              {line.required && " (Required)"}
+            </p>
           )}
         </div>
-      )}
-
-      <div className="min-w-0 flex-1">
-        {isPlan ? (
-          <PlanName name={line.name} />
-        ) : (
-          <p className="text-[14px] leading-4 font-medium tracking-[0.07px] text-ink">
-            {line.name}
-            {line.required && " (Required)"}
-          </p>
-        )}
       </div>
 
       {line.hasStepper && (
