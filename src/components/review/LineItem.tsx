@@ -20,6 +20,9 @@ export function LineItem({ line }: { line: CartLine }) {
     line.unitCompare != null ? toCents(line.unitCompare) * line.qty : undefined;
 
   const isPlan = line.category === "plan";
+  // A two-line price (compare-at above active) top-aligns to the thumbnail; a
+  // single price is vertically centred in the row (Figma).
+  const hasCompare = compareCents != null && compareCents > activeCents;
 
   // The plan row is space-between with the lockup top-aligned to its two-line
   // price. Product rows are a single 12px cluster (thumb → name → stepper) with
@@ -87,7 +90,7 @@ export function LineItem({ line }: { line: CartLine }) {
         compareCents={compareCents}
         unit={line.unit}
         tone="review"
-        className="self-start"
+        className={hasCompare ? "self-start" : undefined}
       />
     </div>
   );
