@@ -16,7 +16,8 @@
   --color-ink: #0b0d10; /* headings, stepper numbers */
   --color-ink-soft: #1f1f1f; /* variant labels, guarantee copy (descriptions at 75%) */
   --color-muted: #6f7882; /* muted price, "/mo", compare labels */
-  --color-ink-price: #575757; /* active price in card */
+  --color-ink-price: #575757; /* active price in card; also review stepper glyph */
+  --color-stepper-glyph: #525963; /* card stepper +/- glyph (active) */
   --color-label: #484848; /* small labels ("Review", "Save my system…") */
   --color-subhead: #a8b2bd; /* category subheads (CAMERAS, SENSORS…) */
   --color-danger: #d8392b; /* strike-through / compare-at price */
@@ -28,11 +29,14 @@
   --color-line: #ced6de; /* default borders / dividers */
   --color-line-soft: #e6ebf0; /* soft dividers */
   --color-chip: #f1f1f2; /* variant chip / stepper control background */
+  --color-chip-selected-bg: #e1f6ef; /* selected variant chip fill (mint) — matches the rendered reference */
+  --color-chip-border: #cccccc; /* unselected variant chip border */
 
   /* ---- Radii (DESIGN-SPEC §4) ---- */
   --radius-card: 10px; /* cards & panels */
   --radius-control: 5px; /* buttons & chips */
   --radius-xs: 4px; /* small elements / stepper controls */
+  --radius-chip: 2px; /* variant colour chips */
 
   /* ---- Motion ----
      The only motion in the app: the accordion open/close (animations were
@@ -55,7 +59,7 @@
   --text-section--letter-spacing: 0px;
   --text-section--font-weight: 600;
 
-  --text-total: 28px; /* grand total "$187.89" */
+  --text-total: 24px; /* grand total (desktop-main + mobile; 28px is desktop-alt only) */
   --text-total--line-height: 32px;
   --text-total--letter-spacing: -0.03px;
   --text-total--font-weight: 700;
@@ -88,16 +92,16 @@
   --text-body--letter-spacing: 0.6px;
   --text-body--font-weight: 500;
 
-  --text-stepper: 16px; /* stepper number */
+  --text-stepper: 16px; /* stepper number (card); review uses 14px */
   --text-stepper--line-height: 20px;
-  --text-stepper--font-weight: 500;
+  --text-stepper--font-weight: 400;
 
   --text-badge: 12px; /* discount badge "Save 22%" */
   --text-badge--line-height: 15px;
   --text-badge--font-weight: 600;
 
-  --text-eyebrow: 11px; /* "STEP 1 OF 4", "REVIEW" */
-  --text-eyebrow--line-height: 14px;
+  --text-eyebrow: 10px; /* "STEP N OF 4", "REVIEW" — 12px on desktop open step + REVIEW via lg override */
+  --text-eyebrow--line-height: 10px;
   --text-eyebrow--letter-spacing: 1.6px;
   --text-eyebrow--font-weight: 500;
 
@@ -115,7 +119,7 @@
   --text-selected--line-height: 18px;
   --text-selected--font-weight: 500;
 
-  --text-savings: 13px; /* "Congrats! …" savings callout */
+  --text-savings: 12px; /* "Congrats! …" savings callout */
   --text-savings--line-height: 18px;
   --text-savings--letter-spacing: -0.06px;
   --text-savings--font-weight: 600;

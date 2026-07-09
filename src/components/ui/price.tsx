@@ -26,14 +26,25 @@ export function Price({
   const showCompare = compareCents != null && compareCents > activeCents;
   const isFree = activeCents === 0;
 
+  // Size + tracking differ by surface (Figma): the card price is 16px/0.6px, the
+  // review price is a smaller 14px/0.07px. The /mo suffix is NOT dimmed — it
+  // inherits the active colour (purple on the plan line), per the design.
+  const sizeCls =
+    tone === "card"
+      ? "text-[16px] leading-4 tracking-[0.6px]"
+      : "text-[14px] leading-4 tracking-[0.07px]";
+
   return (
     <div className={cn("flex flex-col items-end leading-none", className)}>
       {showCompare && (
         <span
           className={cn(
-            "text-price font-medium line-through",
-            // Card compares strike red; review compares are muted grey (§2).
-            tone === "card" ? "text-danger" : "text-muted",
+            sizeCls,
+            "line-through",
+            // Card compare = red, Regular; review compare = muted grey, Medium (§2).
+            tone === "card"
+              ? "font-normal text-danger"
+              : "font-medium text-muted",
           )}
         >
           {formatCents(compareCents)}
@@ -42,8 +53,12 @@ export function Price({
       )}
       <span
         className={cn(
-          "text-price",
-          tone === "card" ? "text-ink-price" : "text-brand",
+          sizeCls,
+          // Cards render the active price at regular weight; the review renders
+          // it heavier (semibold) — the review reads bolder than the card (§5).
+          tone === "card"
+            ? "font-normal text-ink-price"
+            : "font-semibold text-brand",
         )}
       >
         {isFree ? (
@@ -51,7 +66,7 @@ export function Price({
         ) : (
           <>
             {formatCents(activeCents)}
-            {suffix && <span className="text-muted">{suffix}</span>}
+            {suffix}
           </>
         )}
       </span>
