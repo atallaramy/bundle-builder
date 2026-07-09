@@ -93,13 +93,16 @@ export function ProductCard({
         ) : null}
       </div>
 
-      {/* Content column fills the card (flex-1). Figma leaves ~20px dead space
-          before the right padding on the narrower unselected cards, so their
-          price sits slightly further right here than in Figma — a minor
-          spacing delta we accept: capping the width to Figma's 205px would wrap
-          the 3-chip cards, since our Manrope chip labels run ~6px wider than the
-          design's Gilroy (the design fits 3 chips in exactly 205px). */}
-      <div className="flex min-w-0 flex-1 flex-col gap-2.5">
+      {/* Content column: Figma caps it at 205px (the price/stepper row + text
+          wrap to that width, leaving dead space before the right padding). Only
+          at the two-column desktop widths (lg, non-alt); mobile + the alt
+          vertical cards fill their width. */}
+      <div
+        className={cn(
+          "flex min-w-0 flex-1 flex-col gap-2.5",
+          !isAlt && "lg:max-w-[205px]",
+        )}
+      >
         <div className="flex flex-col gap-2">
           <h4 className="text-product text-ink-soft">{product.name}</h4>
           {product.description && (
@@ -121,7 +124,7 @@ export function ProductCard({
             vertically in the card (Figma counterAxisAlignItems: CENTER), so on
             a short card stretched to its row's height the block sits centred
             rather than pinned to the top or bottom. */}
-        <div className="flex items-end justify-between gap-2.5">
+        <div className="flex items-center justify-between gap-2.5">
           {hasStepper ? (
             // `stepperVariantId` is undefined for unvariated products, which the
             // stepper treats as the product's own line. Required products (Sense

@@ -46,7 +46,9 @@ export function VariantSelector({ product }: { product: Product }) {
             key={variant.id}
             value={variant.id}
             className={cn(
-              "flex cursor-pointer items-center gap-1.5 rounded-chip py-px transition-shadow",
+              // 2px thumb→label spacing (Figma packs the 24px thumb tight against
+              // the label; a wider gap also overflows the 3-chip row past 205px).
+              "flex cursor-pointer items-center gap-0.5 rounded-chip py-px transition-shadow",
               // 0.5px stroke drawn INSIDE (Figma) via an inset shadow, so it
               // never grows the 26px chip box the way a layout border would.
               "shadow-[inset_0_0_0_0.5px_var(--color-chip-border)] hover:shadow-[inset_0_0_0_0.5px_var(--color-muted)]",
