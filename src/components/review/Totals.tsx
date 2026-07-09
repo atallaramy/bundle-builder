@@ -2,41 +2,24 @@
 
 import Image from "next/image";
 import { getBundle } from "@/lib/domain/bundle";
-import { formatCents, toCents } from "@/lib/domain/money";
+import { formatCents } from "@/lib/domain/money";
 import { useCartModel } from "@/lib/store/hooks";
-import { Icon } from "@/components/ui/icons";
 
 const { panel } = getBundle();
 
 /**
- * The review panel's summary rows below the line items: free shipping, the
- * satisfaction badge, the financing estimate, the grand total (compare-at
- * struck), and the savings callout. All figures are derived live from the cart
- * model (DESIGN-SPEC §5, §9); shipping is display-only and never added.
+ * The review panel's summary below the line items: the satisfaction badge, the
+ * financing estimate, the grand total (compare-at struck), and the savings
+ * callout. Free shipping is NOT here — in the design it's the last *line group*
+ * (rendered by ReviewPanel), not part of this totals block. All figures are
+ * derived live from the cart model (DESIGN-SPEC §5, §9).
  */
 export function Totals() {
   const { totals, financingCents } = useCartModel();
 
   return (
     <div>
-      <div className="flex items-center gap-3 border-t border-line pt-[15px] pb-0">
-        <div className="flex size-[41px] shrink-0 items-center justify-center rounded-control bg-card">
-          <Icon name="truck" className="size-[29px]" />
-        </div>
-        <span className="flex-1 text-body leading-4 tracking-[0.07px] text-ink">
-          {panel.shipping.label}
-        </span>
-        <div className="flex flex-col items-end leading-none">
-          <span className="text-[14px] leading-4 font-medium tracking-[0.07px] text-muted line-through">
-            {formatCents(toCents(panel.shipping.compareAt))}
-          </span>
-          <span className="text-[14px] leading-4 font-semibold tracking-[0.07px] text-brand">
-            FREE
-          </span>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between gap-3 pt-4">
+      <div className="flex items-center justify-between gap-3">
         <Image
           src={panel.guarantee.image}
           alt={panel.guarantee.text}

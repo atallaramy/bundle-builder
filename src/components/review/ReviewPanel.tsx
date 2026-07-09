@@ -2,10 +2,16 @@
 
 import { cn } from "@/lib/cn";
 import type { LayoutVariant } from "@/lib/layout";
+import { getBundle } from "@/lib/domain/bundle";
+import { toCents } from "@/lib/domain/money";
 import { useCartModel } from "@/lib/store/hooks";
+import { Icon } from "@/components/ui/icons";
+import { Price } from "@/components/ui/price";
 import { LineItem } from "./LineItem";
 import { Totals } from "./Totals";
 import { Checkout } from "./Checkout";
+
+const { panel } = getBundle();
 
 /**
  * "Your security system" — the live review. Reads the derived cart model and
@@ -68,6 +74,27 @@ export function ReviewPanel({ variant = "main" }: { variant?: LayoutVariant }) {
             </div>
           </section>
         ))}
+
+        {/* Free shipping is the final line group in the design (a divider + one
+            row), not part of the totals block — so it stays in this column in
+            both the single-column and alt two-column layouts. */}
+        <section className="mt-[10px] border-t border-line pt-[14px]">
+          <div className="flex items-center gap-4">
+            <div className="flex flex-1 items-center gap-3">
+              <div className="flex size-[41px] shrink-0 items-center justify-center rounded-control bg-card">
+                <Icon name="truck" className="size-[29px]" />
+              </div>
+              <span className="flex-1 text-[14px] leading-4 font-medium tracking-[0.07px] text-ink">
+                {panel.shipping.label}
+              </span>
+            </div>
+            <Price
+              activeCents={0}
+              compareCents={toCents(panel.shipping.compareAt)}
+              tone="review"
+            />
+          </div>
+        </section>
       </div>
 
       <div className={cn("mt-3", isAlt && "lg:mt-0")}>
