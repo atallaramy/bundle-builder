@@ -35,28 +35,43 @@ export function VariantSelector({ product }: { product: Product }) {
       aria-label={`${product.name} colour`}
       className="flex flex-wrap gap-1.5"
     >
-      {variants.map((variant) => (
-        <RadioGroup.Item
-          key={variant.id}
-          value={variant.id}
-          className={cn(
-            "flex cursor-pointer items-center gap-1.5 rounded-chip border bg-card py-1 pr-2.5 pl-1 transition-colors",
-            "focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none",
-            "border-chip-border hover:border-muted",
-            selected &&
-              "data-[state=checked]:border-success data-[state=checked]:bg-chip-selected-bg",
-          )}
-        >
-          <Image
-            src={variant.thumb}
-            alt=""
-            width={20}
-            height={20}
-            className="size-5 rounded-xs object-contain"
-          />
-          <span className="text-variant text-ink-soft">{variant.label}</span>
-        </RadioGroup.Item>
-      ))}
+      {variants.map((variant, index) => {
+        // Figma varies the chip per swatch POSITION, not selection: the
+        // first ("White") swatch gets tighter 3px horizontal padding + a
+        // translucent fill; the rest get 5px + a solid white fill (both
+        // resolve identically on the white card, but we track the source).
+        const isFirst = index === 0;
+        return (
+          <RadioGroup.Item
+            key={variant.id}
+            value={variant.id}
+            className={cn(
+              "flex cursor-pointer items-center gap-1.5 rounded-chip py-px transition-shadow",
+              // 0.5px stroke drawn INSIDE (Figma) via an inset shadow, so it
+              // never grows the 26px chip box the way a layout border would.
+              "shadow-[inset_0_0_0_0.5px_var(--color-chip-border)] hover:shadow-[inset_0_0_0_0.5px_var(--color-muted)]",
+              "focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none",
+              isFirst ? "bg-transparent px-[3px]" : "bg-card px-[5px]",
+              selected &&
+                "data-[state=checked]:bg-chip-selected-bg data-[state=checked]:shadow-[inset_0_0_0_0.5px_var(--color-success)]",
+            )}
+          >
+            <Image
+              src={variant.thumb}
+              alt=""
+              width={24}
+              height={24}
+              className={cn(
+                "size-6 object-contain",
+                // Cam v4 swatches are rounded product-frame thumbs (cr5);
+                // every other product's swatch is a flat rectangle (cr0).
+                product.framedThumb ? "rounded-[5px]" : "rounded-none",
+              )}
+            />
+            <span className="text-variant text-ink-soft">{variant.label}</span>
+          </RadioGroup.Item>
+        );
+      })}
     </RadioGroup.Root>
   );
 }

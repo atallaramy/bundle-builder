@@ -42,6 +42,7 @@
       "discountBadge": "Save 22%",
       "learnMore": true,
       "image": "/products/cam-v4.png",
+      "framedThumb": true,
       "price": { "active": 27.98, "compareAt": 35.98 },
       "variants": [
         {

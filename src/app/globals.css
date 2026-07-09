@@ -29,7 +29,7 @@
   --color-line: #ced6de; /* default borders / dividers */
   --color-line-soft: #e6ebf0; /* soft dividers */
   --color-chip: #f1f1f2; /* variant chip / stepper control background */
-  --color-chip-selected-bg: #e1f6ef; /* selected variant chip fill (mint) — matches the rendered reference */
+  --color-chip-selected-bg: #f6fefc; /* selected chip fill — Figma #1df0bb @4% over white (near-white mint) */
   --color-chip-border: #cccccc; /* unselected variant chip border */
 
   /* ---- Radii (DESIGN-SPEC §4) ---- */

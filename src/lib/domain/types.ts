@@ -50,6 +50,7 @@ export interface Product {
   image?: string; // default hero; absent for the plan (uses `icon`)
   icon?: IconName; // e.g. the plan's shield when there is no product image
   imageFit?: "cover" | "contain"; // review-tile fit; Pan v3 crops (Figma FILL), others contain
+  framedThumb?: boolean; // Cam v4 swatch = rounded product-frame thumb (cr5); others flat rects (cr0)
   price: Price;
   variants?: Variant[]; // absent => single, unvariated product (e.g. doorbell)
   seededQuantity?: number; // initial qty for unvariated products
