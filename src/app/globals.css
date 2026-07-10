@@ -182,4 +182,21 @@ body {
   [data-slot="accordion-content"][data-state="closed"] {
     animation: accordion-up var(--duration-accordion) ease-out;
   }
+
+  /*
+    Grand-total "tick" — a barely-there confirmation that the cart recalculated
+    when a quantity changes. The value itself always updates instantly (it's
+    derived, synchronous); this only fades the new number in over ~130ms so the
+    change is *felt*, not watched. Opacity-only → zero layout/geometry shift, so
+    it never touches the pixel-measured positions. Retriggered by a React `key`
+    on the value; a no-op under reduced motion (keyframe lives in this block).
+  */
+  @keyframes total-tick {
+    from {
+      opacity: 0.55;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 }

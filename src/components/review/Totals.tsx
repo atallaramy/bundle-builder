@@ -51,7 +51,15 @@ export function Totals({ variant = "main" }: { variant?: LayoutVariant }) {
       >
         {formatCents(totals.compareCents)}
       </span>
-      <span className={cn("text-total text-brand", isAlt && "lg:text-[28px]")}>
+      <span
+        // `key` remounts the span when the total changes → replays the subtle
+        // fade-in tick (motion-safe; opacity-only, no layout shift).
+        key={totals.activeCents}
+        className={cn(
+          "text-total text-brand motion-safe:animate-[total-tick_130ms_ease-out]",
+          isAlt && "lg:text-[28px]",
+        )}
+      >
         {formatCents(totals.activeCents)}
       </span>
     </div>
