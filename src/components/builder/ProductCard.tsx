@@ -40,6 +40,11 @@ export function ProductCard({
     (v) => v.id === stepperVariantId,
   );
   const heroSrc = activeVariant?.image ?? product.image;
+  // The Plan is the sparsest product — an icon, a name and a price, with no
+  // photo, description, variants or stepper. It gets a tidied layout so the
+  // shared card doesn't read as dead space. Camera cards always carry an image,
+  // so they never enter this branch (`heroSrc` is truthy) and stay untouched.
+  const isIconOnly = !heroSrc && !!product.icon;
 
   const selected = totalQty > 0;
 
@@ -59,8 +64,11 @@ export function ProductCard({
           : "gap-[13px]",
         // Alt desktop: stack vertically (image on top, content below) and flex
         // to fill an equal share of the horizontal card row the /alt step lays
-        // out (5-up).
-        isAlt && "lg:min-w-0 lg:flex-1 lg:flex-col lg:items-stretch lg:gap-3",
+        // out — but capped at the camera-card width so a step with fewer products
+        // than Cameras doesn't balloon a lone card across the whole row (the row
+        // itself centres the capped cards, see StepAccordion).
+        isAlt &&
+          "lg:max-w-[215px] lg:min-w-0 lg:flex-1 lg:flex-col lg:items-stretch lg:gap-3",
       )}
     >
       {product.discountBadge && (
@@ -89,7 +97,13 @@ export function ProductCard({
             className="size-full object-contain"
           />
         ) : product.icon ? (
-          <Icon name={product.icon} className="size-12" />
+          // The Plan icon fills more of the media box than the old 48px so the
+          // sparse card doesn't read as a small glyph floating in empty space;
+          // larger still in the taller alt media area.
+          <Icon
+            name={product.icon}
+            className={cn("size-16", isAlt && "lg:size-20")}
+          />
         ) : null}
       </div>
 
@@ -137,7 +151,22 @@ export function ProductCard({
             vertically in the card (Figma counterAxisAlignItems: CENTER), so on
             a short card stretched to its row's height the block sits centred
             rather than pinned to the top or bottom. */}
-        <div className="flex items-center justify-between gap-2.5">
+        <div
+          className={cn(
+            "flex items-center gap-2.5",
+            // The Plan card has no stepper, so a right-aligned price would float
+            // alone at the card's far edge (a disconnected name-top / price-right
+            // diagonal across empty space). Instead its name + price stack
+            // together, left-aligned, as one tidy block on the horizontal layouts;
+            // the alt vertical card keeps the price bottom-right to match the
+            // other alt cards. Every card that has a stepper is unchanged.
+            isIconOnly
+              ? isAlt
+                ? "justify-start lg:justify-between"
+                : "justify-start"
+              : "justify-between",
+          )}
+        >
           {hasStepper ? (
             // `stepperVariantId` is undefined for unvariated products, which the
             // stepper treats as the product's own line. Required products (Sense

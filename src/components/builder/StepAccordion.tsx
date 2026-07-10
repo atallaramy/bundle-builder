@@ -148,8 +148,13 @@ function Step({
             // Shared mobile/tablet grid (1-up → 2-up at sm).
             "grid grid-cols-1 gap-[15px] sm:grid-cols-2",
             isAlt
-              ? // Alt desktop: one horizontal row of equal-width vertical cards.
-                "lg:flex lg:gap-[15px]"
+              ? // Alt desktop: one horizontal row of equal-width vertical cards,
+                // centred so a step with fewer products than Cameras (Plan and
+                // Accessories have 1, Sensors 2) doesn't stretch a lone card to
+                // full width. Each card is capped to the camera-card width in
+                // ProductCard; the Cameras step fills the row exactly (5 × 215 +
+                // 4 × 15 = 1135), so centring is a no-op there and cameras stay put.
+                "lg:flex lg:justify-center lg:gap-[15px]"
               : // Main desktop: 2-up grid, last odd card centred at half width.
                 "sm:[&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:w-[calc(50%-7.5px)] sm:[&>*:last-child:nth-child(odd)]:justify-self-center",
           )}
