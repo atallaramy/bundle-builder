@@ -78,4 +78,18 @@ describe("normalizeSelection", () => {
     });
     expect(fixed.quantities["sense-hub"]).toBe(1);
   });
+
+  it("drops lines the catalog no longer offers (unknown product or variant)", () => {
+    const fixed = normalizeSelection(bundle, {
+      quantities: {
+        "cam-v4::white": 1, // valid — kept
+        "ghost-product": 3, // unknown product — dropped
+        "cam-v4::chartreuse": 2, // unknown variant of a real product — dropped
+      },
+      activeVariant: {},
+    });
+    expect(fixed.quantities["cam-v4::white"]).toBe(1);
+    expect(fixed.quantities["ghost-product"]).toBeUndefined();
+    expect(fixed.quantities["cam-v4::chartreuse"]).toBeUndefined();
+  });
 });

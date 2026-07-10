@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { getBundle } from "@/lib/domain/bundle";
 import {
   buildCartLines,
   computeTotals,
@@ -15,16 +14,17 @@ import type { Product } from "@/lib/domain/types";
 import { useBundleStore } from "./bundle-store";
 
 /**
- * Derived-state hooks. Cart lines/counts depend only on `quantities` (never the
- * active variant), so hooks subscribe to `s.selection.quantities` — switching a
- * colour chip (which changes `activeVariant` but not `quantities`) triggers no
- * recompute or re-render here. Derivation is done once inside `useCartModel`.
+ * Derived-state hooks. Cart lines/counts depend on the catalog and `quantities`
+ * (never the active variant), so hooks subscribe to `s.bundle` +
+ * `s.selection.quantities` — switching a colour chip (which changes
+ * `activeVariant` but not `quantities`) triggers no recompute or re-render here,
+ * while a catalog revalidation (which replaces `s.bundle`) does. Derivation runs
+ * once inside `useCartModel`.
  */
-
-const bundle = getBundle();
 
 /** Everything the review panel needs, derived from the selection in one pass. */
 export function useCartModel() {
+  const bundle = useBundleStore((s) => s.bundle);
   const quantities = useBundleStore((s) => s.selection.quantities);
   return useMemo(() => {
     const lines = buildCartLines(bundle, quantities);
@@ -38,15 +38,16 @@ export function useCartModel() {
         bundle.panel.financing.months,
       ),
     };
-  }, [quantities]);
+  }, [bundle, quantities]);
 }
 
 /** "N selected" per category — used by the accordion step headers. */
 export function useSelectedCounts() {
+  const bundle = useBundleStore((s) => s.bundle);
   const quantities = useBundleStore((s) => s.selection.quantities);
   return useMemo(
     () => countSelectedByCategory(bundle, quantities),
-    [quantities],
+    [bundle, quantities],
   );
 }
 

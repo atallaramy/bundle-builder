@@ -62,16 +62,33 @@ export function seedSelection(bundle: BundleData): Selection {
 }
 
 /**
- * Repair a selection (e.g. one restored from untrusted localStorage) against the
- * catalog's invariants: every variated product gets a valid active variant, and
- * required products are re-clamped to their locked quantity. `parseSelection`
- * only checks the payload's *shape*; this restores the *semantics*.
+ * Repair a selection (restored from untrusted localStorage, or carried across a
+ * catalog revalidation) against the catalog's invariants: drop any line the
+ * catalog no longer offers, give every variated product a valid active variant,
+ * and re-clamp required products to their locked quantity. `parseSelection` only
+ * checks the payload's *shape*; this restores the *semantics*.
  */
 export function normalizeSelection(
   bundle: BundleData,
   selection: Selection,
 ): Selection {
-  const quantities: Quantities = { ...selection.quantities };
+  // Every line the catalog actually offers (unvariated product → its id;
+  // variated product → one key per variant). A saved or freshly-fetched catalog
+  // may reference lines that no longer exist (catalog drift) — drop those so a
+  // removed product/variant can't linger in state, skew totals, or resurface.
+  const validKeys = new Set<string>();
+  for (const p of bundle.products) {
+    if (p.variants && p.variants.length > 0) {
+      for (const v of p.variants) validKeys.add(lineKey(p.id, v.id));
+    } else {
+      validKeys.add(lineKey(p.id));
+    }
+  }
+
+  const quantities: Quantities = {};
+  for (const [key, qty] of Object.entries(selection.quantities)) {
+    if (validKeys.has(key)) quantities[key] = qty;
+  }
   const activeVariant: Record<string, string> = { ...selection.activeVariant };
 
   for (const p of bundle.products) {

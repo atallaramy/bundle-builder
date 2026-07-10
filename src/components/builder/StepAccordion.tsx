@@ -1,8 +1,8 @@
 "use client";
 
+import { useMemo } from "react";
 import { cn } from "@/lib/cn";
 import type { LayoutVariant } from "@/lib/layout";
-import { getBundle } from "@/lib/domain/bundle";
 import type { Category } from "@/lib/domain/types";
 import { useBundleStore } from "@/lib/store/bundle-store";
 import { useSelectedCounts } from "@/lib/store/hooks";
@@ -15,10 +15,6 @@ import {
 } from "@/components/ui/accordion";
 import { Icon } from "@/components/ui/icons";
 import { ProductCard } from "./ProductCard";
-
-const bundle = getBundle();
-const steps = [...bundle.categories].sort((a, b) => a.step - b.step);
-const TOTAL_STEPS = steps.length;
 
 /**
  * The four-step builder. A single Radix accordion (single-open, collapsible),
@@ -33,6 +29,13 @@ export function StepAccordion({
 }) {
   const openStep = useBundleStore((s) => s.openStep);
   const setOpenStep = useBundleStore((s) => s.setOpenStep);
+  // Read the catalog from the store (seeded, then revalidated by loadCatalog) so
+  // the steps track a live catalog swap rather than a build-time snapshot.
+  const categories = useBundleStore((s) => s.bundle.categories);
+  const steps = useMemo(
+    () => [...categories].sort((a, b) => a.step - b.step),
+    [categories],
+  );
 
   return (
     <Accordion
@@ -49,6 +52,7 @@ export function StepAccordion({
         <Step
           key={category.id}
           category={category}
+          steps={steps}
           onAdvance={setOpenStep}
           variant={variant}
         />
@@ -59,17 +63,26 @@ export function StepAccordion({
 
 function Step({
   category,
+  steps,
   onAdvance,
   variant,
 }: {
   category: Category;
+  steps: Category[];
   onAdvance: (step: number) => void;
   variant: LayoutVariant;
 }) {
   const isAlt = variant === "alt";
   const counts = useSelectedCounts();
   const count = counts[category.id];
-  const products = bundle.products.filter((p) => p.category === category.id);
+  // Select the stable products array, then filter — a selector returning a fresh
+  // `.filter(...)` array each call would defeat Zustand's referential bail-out.
+  const allProducts = useBundleStore((s) => s.bundle.products);
+  const products = useMemo(
+    () => allProducts.filter((p) => p.category === category.id),
+    [allProducts, category.id],
+  );
+  const totalSteps = steps.length;
   const nextStep = steps.find((c) => c.step === category.step + 1);
 
   return (
@@ -100,7 +113,7 @@ function Step({
                 "lg:w-full lg:text-center lg:text-[12px] lg:leading-[12px]",
             )}
           >
-            Step {category.step} of {TOTAL_STEPS}
+            Step {category.step} of {totalSteps}
           </span>
           {/* Title row. A full-bleed hairline sits under the eyebrow on every
               step (Figma "Frame 25" top stroke, spanning the whole 768px column);

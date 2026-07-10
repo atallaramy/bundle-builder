@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { getBundle } from "@/lib/domain/bundle";
 import { lineKey } from "@/lib/domain/selection";
 import { createMemoryPersistence } from "@/lib/persistence/selection-persistence";
 import { createBundleStore } from "./bundle-store";
@@ -135,5 +136,79 @@ describe("bundle store", () => {
 
     expect(store.getState().selection.activeVariant["cam-v4"]).toBe("white");
     expect(store.getState().selection.quantities["sense-hub"]).toBe(1);
+  });
+
+  it("starts on the bundled seed (catalogStatus 'seed')", () => {
+    const { store } = setup();
+    expect(store.getState().catalogStatus).toBe("seed");
+    expect(store.getState().bundle.panel.financing.months).toBe(12);
+  });
+
+  it("loadCatalog() swaps in the fetched catalog and marks it live", async () => {
+    const fresh = structuredClone(getBundle());
+    fresh.panel.financing.months = 24; // a detectable revalidation
+    const store = createBundleStore({
+      bundleSource: { load: () => Promise.resolve(fresh) },
+      persistence: createMemoryPersistence(),
+    });
+
+    await store.getState().loadCatalog();
+
+    expect(store.getState().catalogStatus).toBe("live");
+    expect(store.getState().bundle.panel.financing.months).toBe(24);
+  });
+
+  it("loadCatalog() re-clamps the selection against the fresh catalog", async () => {
+    const store = createBundleStore({
+      bundleSource: { load: () => Promise.resolve(getBundle()) },
+      persistence: createMemoryPersistence(),
+    });
+    // Tamper the required Sense Hub past its locked quantity via the raw setter.
+    store.getState().setQuantity("sense-hub", undefined, 7);
+    expect(store.getState().selection.quantities["sense-hub"]).toBe(7);
+
+    await store.getState().loadCatalog();
+
+    // normalizeSelection re-clamps required items to their locked qty (1).
+    expect(store.getState().selection.quantities["sense-hub"]).toBe(1);
+  });
+
+  it("loadCatalog() prunes selection lines the fresh catalog no longer offers", async () => {
+    // Fresh catalog with the MicroSD accessory removed (catalog drift).
+    const fresh = structuredClone(getBundle());
+    fresh.products = fresh.products.filter(
+      (p) => p.id !== "microsd-card-256gb",
+    );
+    const store = createBundleStore({
+      bundleSource: { load: () => Promise.resolve(fresh) },
+      persistence: createMemoryPersistence(),
+    });
+    expect(store.getState().selection.quantities["microsd-card-256gb"]).toBe(2);
+
+    await store.getState().loadCatalog();
+
+    // The removed product's seeded line no longer lingers in the selection.
+    expect(
+      store.getState().selection.quantities["microsd-card-256gb"],
+    ).toBeUndefined();
+  });
+
+  it("loadCatalog() keeps the seed and fails loud when the source throws", async () => {
+    const store = createBundleStore({
+      bundleSource: { load: () => Promise.reject(new Error("network down")) },
+      persistence: createMemoryPersistence(),
+    });
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await store.getState().loadCatalog();
+
+    expect(store.getState().catalogStatus).toBe("error");
+    // Seed catalog + selection intact — the app stays fully usable.
+    expect(store.getState().bundle.panel.financing.months).toBe(12);
+    expect(
+      store.getState().selection.quantities[lineKey("cam-v4", "white")],
+    ).toBe(1);
+    expect(errorSpy).toHaveBeenCalledOnce();
+    errorSpy.mockRestore();
   });
 });

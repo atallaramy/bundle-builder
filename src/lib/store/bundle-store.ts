@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { apiBundleSource, type BundleSource } from "@/lib/data/bundle-source";
 import { getBundle } from "@/lib/domain/bundle";
 import {
   lineKey,
@@ -19,6 +20,13 @@ import {
  * pure domain functions (see `store/hooks`). Nothing derived is stored.
  */
 export interface BundleState {
+  /** The catalog the UI renders from. Seeded synchronously from the bundled JSON
+   *  (instant, flash-free first paint), then revalidated from the data source on
+   *  mount — see `loadCatalog`. */
+  bundle: BundleData;
+  /** Provenance of the current `bundle`: the bundled seed, a live fetch, or a
+   *  failed fetch that fell back to the seed. */
+  catalogStatus: "seed" | "live" | "error";
   selection: Selection;
   openStep: number | null;
   savedAt: number | null;
@@ -40,12 +48,18 @@ export interface BundleState {
   save: () => boolean;
   /** Restore a previously saved selection, if any (called on mount). */
   restore: () => void;
+  /** Revalidate the catalog from the data source (stale-while-revalidate). The
+   *  seed is already on screen, so this swaps in fresh data without blocking the
+   *  first paint, and re-clamps the selection to the fresh catalog. Falls back to
+   *  the seed (and fails loud in dev) on any error. Called on mount. */
+  loadCatalog: () => Promise<void>;
   /** Return to the seeded configuration. */
   reset: () => void;
 }
 
 export interface BundleStoreDeps {
   bundle?: BundleData;
+  bundleSource?: BundleSource;
   persistence?: SelectionPersistence;
   now?: () => number;
 }
@@ -55,12 +69,15 @@ export interface BundleStoreDeps {
  * bundle / persistence / clock. The app uses the default singleton below.
  */
 export function createBundleStore(deps: BundleStoreDeps = {}) {
-  const bundle = deps.bundle ?? getBundle();
+  const seed = deps.bundle ?? getBundle();
+  const bundleSource = deps.bundleSource ?? apiBundleSource;
   const persistence = deps.persistence ?? localStoragePersistence;
   const now = deps.now ?? (() => Date.now());
 
   return create<BundleState>((set, get) => ({
-    selection: seedSelection(bundle),
+    bundle: seed,
+    catalogStatus: "seed",
+    selection: seedSelection(seed),
     openStep: 1, // Step 1 (Cameras) open on load.
     savedAt: null,
 
@@ -124,12 +141,42 @@ export function createBundleStore(deps: BundleStoreDeps = {}) {
       const restored = persistence.load();
       // Repair the untrusted payload against catalog invariants before trusting
       // it (valid active variant per product, required items re-clamped).
-      if (restored) set({ selection: normalizeSelection(bundle, restored) });
+      if (restored)
+        set((state) => ({
+          selection: normalizeSelection(state.bundle, restored),
+        }));
+    },
+
+    async loadCatalog() {
+      try {
+        const fresh = await bundleSource.load();
+        set((state) => ({
+          bundle: fresh,
+          catalogStatus: "live",
+          // Re-clamp the selection to the fresh catalog so a product/variant that
+          // changed or vanished server-side can't linger in the selection.
+          selection: normalizeSelection(fresh, state.selection),
+        }));
+      } catch (err) {
+        // Keep the seed on screen — the app stays fully usable — but surface the
+        // failure loudly in dev rather than swallowing it (CLAUDE.md: fail loud).
+        if (process.env.NODE_ENV !== "production") {
+          console.error(
+            "Catalog revalidation from the data source failed; keeping the bundled seed.",
+            err,
+          );
+        }
+        set({ catalogStatus: "error" });
+      }
     },
 
     reset() {
       persistence.clear();
-      set({ selection: seedSelection(bundle), openStep: 1, savedAt: null });
+      set((state) => ({
+        selection: seedSelection(state.bundle),
+        openStep: 1,
+        savedAt: null,
+      }));
     },
   }));
 }

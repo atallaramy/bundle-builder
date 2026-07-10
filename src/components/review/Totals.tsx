@@ -3,11 +3,9 @@
 import Image from "next/image";
 import { cn } from "@/lib/cn";
 import type { LayoutVariant } from "@/lib/layout";
-import { getBundle } from "@/lib/domain/bundle";
 import { formatCents } from "@/lib/domain/money";
+import { useBundleStore } from "@/lib/store/bundle-store";
 import { useCartModel } from "@/lib/store/hooks";
-
-const { panel } = getBundle();
 
 /**
  * The review panel's summary below the line items: the satisfaction seal, the
@@ -26,6 +24,7 @@ const { panel } = getBundle();
  */
 export function Totals({ variant = "main" }: { variant?: LayoutVariant }) {
   const { totals, financingCents } = useCartModel();
+  const panel = useBundleStore((s) => s.bundle.panel);
   const isAlt = variant === "alt";
 
   const pill = (

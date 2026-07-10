@@ -51,6 +51,7 @@ src/
     domain/       # PURE logic: pricing (integer cents), variant-qty, counts — framework-free
     store/         # Zustand store (single source of truth) + derived-state hooks
     persistence/   # localStorage adapter behind an interface (validated payload)
+    data/          # catalog source adapter (seed + /api/bundle fetch) behind an interface
   data/bundle.json # all products, categories, panel config (served by /api/bundle)
 ```
 
@@ -60,9 +61,9 @@ Principles the feature actually earns:
   every count/total/line is **derived** (never stored). The card stepper and the
   review line read/write the same store line, so they stay in sync with no
   syncing code.
-- **Data-driven** — components render from `bundle.json` (also served from a small
-  `/api/bundle` route — the optional backend bonus). Adding a product/variant is a
-  data change, not new markup. State is **seeded** so first paint matches the design.
+- **Data-driven** — components render from the catalog; adding a product/variant is a
+  data change, not new markup. State is **seeded** so first paint matches the design,
+  then the catalog is revalidated from `/api/bundle` (see _Catalog data path_ below).
 - **Pure domain layer** — money math and per-variant quantity logic are pure,
   hard-unit-tested functions.
 - **Persistence behind an interface** — localStorage is one implementation; the
@@ -81,6 +82,15 @@ Principles the feature actually earns:
 
 ## Decisions & tradeoffs
 
+- **Catalog data path (stale-while-revalidate).** First paint uses the bundled
+  `bundle.json` seed, so there's no loading flash over the pixel-matched design; on
+  mount the store's `loadCatalog` fetches `/api/bundle`, validates the payload, and
+  revalidates the catalog — exercising the real frontend↔backend path (plus loading
+  and error handling) without a spinner. The catalog lives in the store (the cart
+  derivations need catalog + selection together) behind a swappable `BundleSource`
+  interface — the same Adapter/DIP seam as persistence, so the source can move from
+  the bonus API to a real backend without touching consumers. A fetch failure falls
+  back to the seed and fails loud in dev; the app stays fully usable.
 - **Fonts.** The design uses Gilroy + TT Norms Pro (licensed); this build
   substitutes **Manrope**, the closest free geometric-humanist match. Manrope
   renders a touch wider than Gilroy, which accounts for the only real pixel
@@ -110,8 +120,9 @@ Principles the feature actually earns:
 
 ## Not included (scope)
 
-- No backend beyond the single `/api/bundle` route (the bonus); no auth, PII, or
-  secrets — it's a client-side prototype.
+- No backend beyond the single `/api/bundle` route (the bonus, now consumed at
+  runtime — see _Catalog data path_ above); no auth, PII, or secrets — client-side
+  prototype.
 - No dark mode, i18n, or animation beyond the accordion open/close.
 - Not deployed (a later step).
 

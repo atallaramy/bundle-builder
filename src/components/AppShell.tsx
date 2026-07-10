@@ -16,13 +16,19 @@ import { ReviewPanel } from "@/components/review/ReviewPanel";
  * - `alt`  (`/alt`) — one column: full-width builder above the review.
  *
  * A previously saved system is restored on mount; until then the seeded
- * configuration renders, so the first paint matches the design.
+ * configuration renders, so the first paint matches the design. The catalog is
+ * revalidated from `/api/bundle` on mount too (stale-while-revalidate) — the
+ * bundled seed paints first, so this never blocks or flashes the first render.
  */
 export function AppShell({ variant }: { variant: LayoutVariant }) {
   const restore = useBundleStore((s) => s.restore);
+  const loadCatalog = useBundleStore((s) => s.loadCatalog);
   useEffect(() => {
     restore();
-  }, [restore]);
+    // `loadCatalog` handles its own errors (falls back to the seed), so the
+    // rejection can't escape; `void` documents the intentional fire-and-forget.
+    void loadCatalog();
+  }, [restore, loadCatalog]);
 
   const isAlt = variant === "alt";
   // Two-column review is sticky and can outgrow the viewport; follow the scroll

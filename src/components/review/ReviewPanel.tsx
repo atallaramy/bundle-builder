@@ -2,16 +2,14 @@
 
 import { cn } from "@/lib/cn";
 import type { LayoutVariant } from "@/lib/layout";
-import { getBundle } from "@/lib/domain/bundle";
 import { toCents } from "@/lib/domain/money";
+import { useBundleStore } from "@/lib/store/bundle-store";
 import { useCartModel } from "@/lib/store/hooks";
 import { Icon } from "@/components/ui/icons";
 import { Price } from "@/components/ui/price";
 import { LineItem } from "./LineItem";
 import { Totals } from "./Totals";
 import { Checkout } from "./Checkout";
-
-const { panel } = getBundle();
 
 /**
  * "Your security system" — the live review. Reads the derived cart model and
@@ -21,6 +19,7 @@ const { panel } = getBundle();
  */
 export function ReviewPanel({ variant = "main" }: { variant?: LayoutVariant }) {
   const { groups } = useCartModel();
+  const panel = useBundleStore((s) => s.bundle.panel);
   const isAlt = variant === "alt";
 
   return (
