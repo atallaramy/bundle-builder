@@ -1,0 +1,27 @@
+# Local-only dev aids — never ship to the public deployment (mirrors .gitignore)
+/design-reference/
+/CLAUDE.md
+/DISCUSSIONS.md
+
+# Secrets / env
+.env
+.env*.local
+*.local
+*.pem
+
+# Deps & build output (Vercel builds fresh on its side)
+/node_modules
+/.next/
+/out/
+/build
+/dist
+/coverage
+
+# Tests & reports (not needed for the runtime)
+/playwright-report/
+/test-results/
+
+# Misc
+.DS_Store
+*.tsbuildinfo
+dev.log

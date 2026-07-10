@@ -7,6 +7,17 @@ category-grouped line items, quantity steppers kept in sync with the cards,
 totals with savings, and **"Save my system for later"** (localStorage). Built as a
 production-quality, client-side React app.
 
+## Live demo
+
+Deployed on Vercel — click to open:
+
+- **[Main layout — `/`](https://ecomexperts-io-ramy.vercel.app/)** — the canonical
+  two-column builder beside the live review.
+- **[Alternate layout — `/alt`](https://ecomexperts-io-ramy.vercel.app/alt)** — the
+  single-column variant (same components + store).
+- **[Catalog API — `/api/bundle`](https://ecomexperts-io-ramy.vercel.app/api/bundle)** —
+  the JSON the app fetches at runtime.
+
 ## Run it
 
 Prerequisites: **Node 20+** (developed on 22).
@@ -44,7 +55,8 @@ Testing Library · Playwright.
 src/
   app/            # page shells (/ and /alt), layout, /api/bundle route
   components/
-    ui/           # primitives (accordion, radio group, price, icons) themed to tokens
+    AppShell.tsx  # layout shell — two-column (/) vs single-column (/alt)
+    ui/           # primitives (accordion, price, icons) themed to tokens
     builder/      # StepAccordion, ProductCard, VariantSelector, QtyStepper
     review/       # ReviewPanel, LineItem, Totals, Checkout
   lib/
@@ -63,7 +75,9 @@ Principles the feature actually earns:
   syncing code.
 - **Data-driven** — components render from the catalog; adding a product/variant is a
   data change, not new markup. State is **seeded** so first paint matches the design,
-  then the catalog is revalidated from `/api/bundle` (see _Catalog data path_ below).
+  then revalidated from `/api/bundle` (stale-while-revalidate; a fetch failure keeps
+  the seed and fails loud in dev) via a swappable `BundleSource` interface — the same
+  Adapter/DIP seam as persistence.
 - **Pure domain layer** — money math and per-variant quantity logic are pure,
   hard-unit-tested functions.
 - **Persistence behind an interface** — localStorage is one implementation; the
@@ -82,49 +96,35 @@ Principles the feature actually earns:
 
 ## Decisions & tradeoffs
 
-- **Catalog data path (stale-while-revalidate).** First paint uses the bundled
-  `bundle.json` seed, so there's no loading flash over the pixel-matched design; on
-  mount the store's `loadCatalog` fetches `/api/bundle`, validates the payload, and
-  revalidates the catalog — exercising the real frontend↔backend path (plus loading
-  and error handling) without a spinner. The catalog lives in the store (the cart
-  derivations need catalog + selection together) behind a swappable `BundleSource`
-  interface — the same Adapter/DIP seam as persistence, so the source can move from
-  the bonus API to a real backend without touching consumers. A fetch failure falls
-  back to the seed and fails loud in dev; the app stays fully usable.
-- **Fonts.** The design uses Gilroy + TT Norms Pro (licensed); this build
-  substitutes **Manrope**, the closest free geometric-humanist match. Manrope
-  renders a touch wider than Gilroy, which accounts for the only real pixel
-  deltas: two long product names wrap on mobile, and a couple of shrink-wrapped
-  prices/steppers sit a few px off. Accepted as font-metric.
-- **Pan v3 pricing.** The Figma's Pan v3 card and review prices are mutually
-  inconsistent. This build treats the **card price as canonical**
-  (`$34.98` / compare `$39.98`) with honest recalculating math → seeded grand
-  total **$209.87** (compare `$260.79`, savings `$50.92`). That intentionally
-  differs from the mock's self-inconsistent `$187.89`.
-- **Steps 2–4.** The Figma only fully designs the Cameras step; the plan, sensors,
-  and accessories appear only as pre-populated review lines. Their card styling is
-  a consistent extension of the Cameras pattern via the same data-driven
-  components (variants only where a product has them).
-- **Plan review line has no stepper** — shield · two-tone name · struck `/mo`
-  price. It's the one line without a stepper, per the design (the Required Sense
-  Hub keeps its stepper, but disabled).
-- **Two desktop layouts.** `/` and `/alt` are the two desktop frames in the
-  design; both are the same components + store parameterized by a `variant` prop
-  (no route-sniffing), sharing one responsive mobile layout.
-- **Mobile is responsive, not pixel-matched** (as the brief specifies). Panels go
-  full-bleed to match the phone frame; long product names may wrap.
-- **One Figma card** is left at a smaller type size in the mock (the other four in
-  its row are larger) — kept the row uniform rather than reproduce the slip. The
-  fidelity work was measured against the design frame-by-frame; see the
-  `fix(fidelity): …` commit history.
+Design-fidelity calls made against the Figma:
+
+- **Fonts.** Gilroy + TT Norms Pro are licensed, so this build substitutes
+  **Manrope** — the closest free geometric-humanist match (it renders a touch wider).
+- **Pan v3 pricing.** The mock's card and review prices conflict — took the card
+  price as canonical and recomputed the totals.
+- **Steps 2–4.** The Figma fully designs only the Cameras step; Plan, Sensors, and
+  Accessories extend the same card pattern through the shared data-driven components.
+- **Plan line has no stepper** — per the design (the Required Sense Hub keeps its
+  stepper, but disabled).
+- **Stepper position.** The Figma is inconsistent — on `/` each stepper sits under its
+  card's description; on `/alt` they're all aligned to one shared line. Kept the `/`
+  behaviour (under each card's content) in both, rather than build two.
+- **Stepper button styling.** The Figma's +/− buttons fluctuate card-to-card
+  (fill/no-fill, border/no-border); standardised into consistent active / at-minimum /
+  locked states rather than copy each one-off.
+- **Two desktop layouts.** `/` and `/alt` are the two desktop frames — the same
+  components + store, switched by a `variant` prop (no route-sniffing).
+- **Mobile is responsive, not pixel-matched** (per the brief) — panels go full-bleed;
+  long product names may wrap.
+- **One Figma card** sits at a smaller type size than its four row-mates in the mock —
+  kept the row uniform rather than reproduce the slip.
 
 ## Not included (scope)
 
-- No backend beyond the single `/api/bundle` route (the bonus, now consumed at
-  runtime — see _Catalog data path_ above); no auth, PII, or secrets — client-side
-  prototype.
-- No dark mode, i18n, or animation beyond the accordion open/close.
-- Not deployed (a later step).
+- No backend beyond the single `/api/bundle` route (the bonus — consumed at runtime,
+  see _Data-driven_ above); no auth, PII, or secrets — client-side prototype.
+- No dark mode, i18n, or animation beyond the accordion open/close and a subtle
+  grand-total tick.
 
 ## Testing
 
